@@ -1,9 +1,10 @@
 import React from "react";
+import PowerStatus from "./PowerStatus";
 
 function App() {
   return (
     <div>
-      <h1>Welcome to Vite + React</h1>
+      <PowerStatus />
     </div>
   );
 }

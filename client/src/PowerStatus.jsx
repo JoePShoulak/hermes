@@ -8,12 +8,12 @@ function PowerStatus() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/power/all"); // Correct endpoint
+        const response = await fetch("/api/power/all"); // Fetch from the backend
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setPowerData(data);
+        setPowerData(data); // Save data to state
       } catch (err) {
         console.error("Error fetching power data:", err);
         setError(err.message);
@@ -21,7 +21,7 @@ function PowerStatus() {
     }
 
     fetchData();
-  }, []); // Run once on component mount
+  }, []); // Fetch only once when the component mounts
 
   return (
     <div>
@@ -41,7 +41,7 @@ function PowerStatus() {
               {powerData.map((item, index) => (
                 <tr key={index}>
                   <td>{item.host}</td>
-                  <td>{item.power || "N/A"}</td>
+                  <td>{item.power || "Unknown"}</td>
                   <td>{item.error || "None"}</td>
                 </tr>
               ))}
