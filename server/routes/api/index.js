@@ -78,9 +78,34 @@ router.get("/power/HP/:id", (req, res) => {
 });
 
 router.put("/power/HP/:id", (req, res) => {
-  const id = req.params.id;
-  const update = req.body.update;
-  res.json({ id, update });
+  const host = `hp${req.params.id}`;
+  const { state } = req.body; // Extract "state" from the request payload
+
+  if (!state) {
+    return res.status(400).json({ error: "Missing 'state' in request body" });
+  }
+
+  const command = `ilo ${host} power ${state}`; // Build the command
+
+  exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
+    if (error || stderr) {
+      console.error(
+        `Error executing command for ${host}:`,
+        error.message || stderr
+      );
+      return res.status(500).json({
+        error: `Failed to execute command for ${host}`,
+        details: error.message || stderr,
+      });
+    }
+
+    // Parse and return the command output
+    res.json({
+      host,
+      state,
+      output: stdout.trim(),
+    });
+  });
 });
 
 module.exports = router;
