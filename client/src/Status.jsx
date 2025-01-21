@@ -143,7 +143,7 @@ function Status() {
 
                 // LED for container count: blue if > 1, otherwise gray
                 const getContainerLedColor = () => {
-                  return containers > 1 ? "blue" : "gray";
+                  return containers > 0 ? "blue" : "gray";
                 };
 
                 return (
