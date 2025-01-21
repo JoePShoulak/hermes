@@ -50,17 +50,6 @@ function PowerStatus() {
     }
   }
 
-  // Helper function to check button states
-  const isButtonDisabled = (currentStatus, buttonState) => {
-    if (currentStatus === "ON" && buttonState === "ON") return true;
-    if (
-      currentStatus === "OFF" &&
-      (buttonState === "OFF" || buttonState === "RESET")
-    )
-      return true;
-    return false; // Enable for UNKNOWN or valid transitions
-  };
-
   return (
     <div>
       <h1>Power Status</h1>
@@ -76,37 +65,46 @@ function PowerStatus() {
               </tr>
             </thead>
             <tbody>
-              {powerData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.host}</td>
-                  <td>{item.power || "Unknown"}</td>
-                  <td>
-                    <button
-                      style={{ marginRight: "10px" }}
-                      onClick={() =>
-                        handlePowerState(item.host.replace("hp", ""), "OFF")
-                      }
-                      disabled={isButtonDisabled(item.power, "OFF")}>
-                      Power Off
-                    </button>
-                    <button
-                      style={{ marginRight: "10px" }}
-                      onClick={() =>
-                        handlePowerState(item.host.replace("hp", ""), "ON")
-                      }
-                      disabled={isButtonDisabled(item.power, "ON")}>
-                      Power On
-                    </button>
-                    <button
-                      onClick={() =>
-                        handlePowerState(item.host.replace("hp", ""), "RESET")
-                      }
-                      disabled={isButtonDisabled(item.power, "RESET")}>
-                      Power Reset
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {powerData.map((item, index) => {
+                const isOn = item.power === "ON";
+                const isOff = item.power === "OFF";
+                const isUnknown = item.power === "UNKNOWN";
+
+                return (
+                  <tr key={index}>
+                    <td>{item.host}</td>
+                    <td>{item.power || "Unknown"}</td>
+                    <td>
+                      <button
+                        style={{ marginRight: "10px" }}
+                        onClick={() =>
+                          handlePowerState(item.host.replace("hp", ""), "OFF")
+                        }
+                        disabled={isOff && !isUnknown} // Disabled if already OFF, unless UNKNOWN
+                      >
+                        Power Off
+                      </button>
+                      <button
+                        style={{ marginRight: "10px" }}
+                        onClick={() =>
+                          handlePowerState(item.host.replace("hp", ""), "ON")
+                        }
+                        disabled={isOn && !isUnknown} // Disabled if already ON, unless UNKNOWN
+                      >
+                        Power On
+                      </button>
+                      <button
+                        onClick={() =>
+                          handlePowerState(item.host.replace("hp", ""), "RESET")
+                        }
+                        disabled={isOff && !isUnknown} // Disabled if OFF, unless UNKNOWN
+                      >
+                        Power Reset
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (
