@@ -1,41 +1,59 @@
 const router = require("express").Router();
 const { exec } = require("child_process");
+const ping = require("ping");
 
 const ILO_TIMEOUT = 60000;
 
 router.get("/power/all", async (req, res) => {
-  const hosts = ["hp1", "hp2", "hp3", "hp4"]; // Define the hosts
+  const hosts = [
+    { name: "hp1", ip: "10.0.20.11" },
+    { name: "hp2", ip: "10.0.20.12" },
+    { name: "hp3", ip: "10.0.20.13" },
+    { name: "hp4", ip: "10.0.20.14" },
+  ]; // Define the hosts with their IPs
   const commandTimeout = { timeout: ILO_TIMEOUT };
 
   try {
-    // Use Promise.all to execute `ilo` commands for all hosts
+    // Use Promise.all to execute `ilo` commands and ping checks for all hosts
     const results = await Promise.all(
       hosts.map(
         host =>
           new Promise(resolve => {
-            const command = `ilo ${host} power`;
+            const command = `ilo ${host.name} power`;
 
-            exec(command, commandTimeout, (error, stdout, stderr) => {
-              if (error || stderr) {
+            exec(command, commandTimeout, async (error, stdout, stderr) => {
+              let powerStatus = "UNKNOWN";
+              let reachable = false;
+
+              // Parse the power status from `ilo` command
+              if (!error && !stderr) {
+                powerStatus =
+                  stdout
+                    .split("currently: ")[1]
+                    ?.split("\r\n\r\n")[0]
+                    ?.trim() || "UNKNOWN";
+              } else {
                 console.error(
-                  `Error executing command for ${host}:`,
-                  error.message || stderr
+                  `Error executing command for ${host.name}:`,
+                  error?.message || stderr
                 );
-                return resolve({
-                  host,
-                  error: `Failed to run command for ${host}`,
-                  details: error.message || stderr,
-                });
               }
 
-              // Parse stdout
-              const powerStatus =
-                stdout.split("currently: ")[1]?.split("\r\n\r\n")[0]?.trim() ||
-                "Unknown";
+              // Perform a ping check
+              try {
+                const pingResult = await ping.promise.probe(host.ip);
+                reachable = pingResult.alive;
+              } catch (pingError) {
+                console.error(
+                  `Ping failed for ${host.name}:`,
+                  pingError.message
+                );
+              }
 
               resolve({
-                host,
+                host: host.name,
                 power: powerStatus,
+                reachable,
               });
             });
           })
@@ -67,7 +85,7 @@ router.get("/power/HP/:id", (req, res) => {
     }
 
     // parse stdout
-    stdout = stdout.split("currently: ")[1].split("\r\n\r\n")[0];
+    stdout = stdout.split("currently: ")[1]?.split("\r\n\r\n")[0] || "UNKNOWN";
 
     // Send the command output as a JSON response
     res.json({
