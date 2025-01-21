@@ -9,6 +9,4 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(routes);
 
-app.listen(PORT, "127.0.0.1", () =>
-  console.log(`App listening on port ${PORT}!`)
-);
+app.listen(PORT, () => console.log(`App listening on port ${PORT}!`));
