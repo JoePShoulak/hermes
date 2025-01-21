@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 function PowerStatus() {
   const [powerData, setPowerData] = useState([]);
   const [error, setError] = useState(null);
+  const [lastUpdate, setLastUpdate] = useState(null); // Track the last update time
+  const [elapsedTime, setElapsedTime] = useState(0); // Time elapsed since last update
 
   // Fetch power data from the API
   useEffect(() => {
@@ -14,6 +16,7 @@ function PowerStatus() {
         }
         const data = await response.json();
         setPowerData(data); // Save data to state
+        setLastUpdate(Date.now()); // Set the last update time
       } catch (err) {
         console.error("Error fetching power data:", err);
         setError(err.message);
@@ -21,39 +24,32 @@ function PowerStatus() {
     }
 
     fetchData();
-  }, []); // Run once on component mount
+  }, []); // Fetch only once when the component mounts
 
-  // Function to handle power state requests
-  async function handlePowerState(hostId, state) {
-    try {
-      const response = await fetch(`/api/power/hp/${hostId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ state }),
-      });
+  // Timer to update elapsed time
+  useEffect(() => {
+    if (lastUpdate) {
+      const interval = setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - lastUpdate) / 1000));
+      }, 1000);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log(`Power ${state} for ${hostId} successful:`, result);
-
-      // Optional: Refetch the power status after the action
-      const updatedData = await fetch("/api/power/all").then(res => res.json());
-      setPowerData(updatedData);
-    } catch (err) {
-      console.error(`Error sending power ${state} request:`, err);
-      alert(`Failed to power ${state} ${hostId}: ${err.message}`);
+      return () => clearInterval(interval); // Cleanup interval on component unmount
     }
-  }
+  }, [lastUpdate]);
+
+  // Format elapsed time into hh:mm:ss
+  const formatTime = seconds => {
+    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  };
 
   return (
     <div>
       <h1>Power Status</h1>
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      <p>Time since last update: {formatTime(elapsedTime)}</p>
       <div>
         {powerData.length > 0 ? (
           <table border="1" cellPadding="10">
@@ -73,7 +69,7 @@ function PowerStatus() {
                   <td>
                     <button
                       onClick={() =>
-                        handlePowerState(item.host.replace("hp", ""), "OFF")
+                        handlePowerState(item.host.replace("hp", ""), "off")
                       }>
                       Power Off
                     </button>
@@ -81,7 +77,7 @@ function PowerStatus() {
                   <td>
                     <button
                       onClick={() =>
-                        handlePowerState(item.host.replace("hp", ""), "ON")
+                        handlePowerState(item.host.replace("hp", ""), "on")
                       }>
                       Power On
                     </button>
