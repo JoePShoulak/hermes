@@ -108,8 +108,6 @@ function Status() {
         {lastUpdate
           ? `${formatElapsedTime(elapsedTime)} ago`
           : "No updates yet"}
-        {"  "}
-        <button onClick={fetchData}>Refresh</button>
       </p>
 
       <div>
