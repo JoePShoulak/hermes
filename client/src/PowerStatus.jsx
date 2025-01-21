@@ -61,7 +61,6 @@ function PowerStatus() {
               <tr>
                 <th>Host</th>
                 <th>Power Status</th>
-                <th>Error Details</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -70,7 +69,6 @@ function PowerStatus() {
                 <tr key={index}>
                   <td>{item.host}</td>
                   <td>{item.power || "Unknown"}</td>
-                  <td>{item.error || "None"}</td>
                   <td>
                     <button
                       onClick={() =>
