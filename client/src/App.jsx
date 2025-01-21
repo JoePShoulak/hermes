@@ -1,10 +1,9 @@
 import React from "react";
-import PowerStatus from "./PowerStatus";
 
 function App() {
   return (
-    <div className="App">
-      <PowerStatus />
+    <div>
+      <h1>Welcome to Vite + React</h1>
     </div>
   );
 }
