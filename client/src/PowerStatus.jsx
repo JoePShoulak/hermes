@@ -100,6 +100,7 @@ function PowerStatus() {
               <tr>
                 <th>Host</th>
                 <th>Power Status</th>
+                <th>LED</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -108,10 +109,33 @@ function PowerStatus() {
                 const { host, power } = item; // Extract host and normalized power state
                 const hostId = host.replace("hp", ""); // Extract numeric ID from host
 
+                // Determine LED color based on power state
+                const getLedColor = power => {
+                  switch (power) {
+                    case "ON":
+                      return "yellow";
+                    case "OFF":
+                      return "red";
+                    case "UNKNOWN":
+                    default:
+                      return "black";
+                  }
+                };
+
                 return (
                   <tr key={index}>
                     <td>{host}</td>
                     <td>{power}</td>
+                    <td>
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "50%",
+                          backgroundColor: getLedColor(power),
+                          margin: "auto",
+                        }}></div>
+                    </td>
                     <td>
                       <button
                         style={{ marginRight: "10px" }}
