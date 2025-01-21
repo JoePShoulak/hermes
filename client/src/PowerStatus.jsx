@@ -31,7 +31,7 @@ function PowerStatus() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ state: "off" }),
+        body: JSON.stringify({ state: "OFF" }),
       });
 
       if (!response.ok) {
