@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from "react";
 
 function PowerStatus() {
-  const [powerData, setPowerData] = useState([]);
-  const [error, setError] = useState(null);
+  const [powerData, setPowerData] = useState([]); // Store power data from API
+  const [error, setError] = useState(null); // Store errors if API fails
 
   // Fetch power data from the API
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/power/all"); // Fetch from backend
+        const response = await fetch("/api/power/all"); // Call the API
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setPowerData(data); // Save data to state
+        setPowerData(data); // Update power data in state
       } catch (err) {
         console.error("Error fetching power data:", err);
         setError(err.message);
       }
     }
 
-    fetchData();
-  }, []); // Run once on component mount
+    fetchData(); // Initial fetch
+  }, []); // Run only once on component mount
 
-  // Function to handle power state requests (ON/OFF/RESET)
+  // Function to send power state requests (ON/OFF/RESET)
   async function handlePowerState(hostId, state) {
     try {
       const response = await fetch(`/api/power/hp/${hostId}`, {
@@ -31,7 +31,7 @@ function PowerStatus() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ state }),
+        body: JSON.stringify({ state }), // Pass the state (e.g., ON, OFF, RESET)
       });
 
       if (!response.ok) {
@@ -41,7 +41,7 @@ function PowerStatus() {
       const result = await response.json();
       console.log(`Power ${state} for ${hostId} successful:`, result);
 
-      // Optional: Refetch the power status after the action
+      // Refetch power data after sending the request
       const updatedData = await fetch("/api/power/all").then(res => res.json());
       setPowerData(updatedData);
     } catch (err) {
@@ -66,38 +66,31 @@ function PowerStatus() {
             </thead>
             <tbody>
               {powerData.map((item, index) => {
-                const isOn = item.power === "ON";
-                const isOff = item.power === "OFF";
-                const isUnknown = item.power === "UNKNOWN";
+                const { host, power } = item; // Extract host and power state
+                const hostId = host.replace("hp", ""); // Extract numeric ID from host
 
                 return (
                   <tr key={index}>
-                    <td>{item.host}</td>
-                    <td>{item.power || "Unknown"}</td>
+                    <td>{host}</td>
+                    <td>{power || "Unknown"}</td>
                     <td>
                       <button
                         style={{ marginRight: "10px" }}
-                        onClick={() =>
-                          handlePowerState(item.host.replace("hp", ""), "OFF")
-                        }
-                        disabled={isOff && !isUnknown} // Disabled if already OFF, unless UNKNOWN
+                        onClick={() => handlePowerState(hostId, "OFF")}
+                        disabled={power === "OFF"} // Disable if already OFF
                       >
                         Power Off
                       </button>
                       <button
                         style={{ marginRight: "10px" }}
-                        onClick={() =>
-                          handlePowerState(item.host.replace("hp", ""), "ON")
-                        }
-                        disabled={isOn && !isUnknown} // Disabled if already ON, unless UNKNOWN
+                        onClick={() => handlePowerState(hostId, "ON")}
+                        disabled={power === "ON"} // Disable if already ON
                       >
                         Power On
                       </button>
                       <button
-                        onClick={() =>
-                          handlePowerState(item.host.replace("hp", ""), "RESET")
-                        }
-                        disabled={isOff && !isUnknown} // Disabled if OFF, unless UNKNOWN
+                        onClick={() => handlePowerState(hostId, "RESET")}
+                        disabled={power === "OFF"} // Disable RESET if OFF
                       >
                         Power Reset
                       </button>
