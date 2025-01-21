@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 function PowerStatus() {
-  const [powerData, setPowerData] = useState([]); // Store power data from API
+  const [statusData, setPowerData] = useState([]); // Store status data from API
   const [error, setError] = useState(null); // Store errors if API fails
   const [lastUpdate, setLastUpdate] = useState(null); // Track last update time
   const [elapsedTime, setElapsedTime] = useState(0); // Time elapsed since last update
 
-  // Fetch power data from the API
+  // Fetch status data from the API
   const fetchData = async () => {
     try {
-      const response = await fetch("/api/power/all"); // Call the API
+      const response = await fetch("/api/status/all"); // Call the API
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -17,12 +17,12 @@ function PowerStatus() {
       setPowerData(
         data.map(item => ({
           ...item,
-          power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
+          status: item.status?.toUpperCase() || "UNKNOWN", // Normalize status state
         }))
-      ); // Update power data in state
+      ); // Update status data in state
       setLastUpdate(Date.now()); // Update the last update time
     } catch (err) {
-      console.error("Error fetching power data:", err);
+      console.error("Error fetching status data:", err);
       setError(err.message);
     }
   };
@@ -43,19 +43,19 @@ function PowerStatus() {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [lastUpdate]);
 
-  // Function to send power state requests (ON/OFF/RESET)
+  // Function to send status state requests (ON/OFF/RESET)
   const handlePowerState = async (hostId, state) => {
     // Instantly update the local state to show UNKNOWN for the clicked host
     setPowerData(prevData =>
       prevData.map(item =>
         item.host.replace("hp", "") === hostId
-          ? { ...item, power: "UNKNOWN" }
+          ? { ...item, status: "UNKNOWN" }
           : item
       )
     );
 
     try {
-      const response = await fetch(`/api/power/hp/${hostId}`, {
+      const response = await fetch(`/api/status/hp/${hostId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -70,18 +70,20 @@ function PowerStatus() {
       const result = await response.json();
       console.log(`Power ${state} for ${hostId} successful:`, result);
 
-      // Refetch power data after sending the request
-      const updatedData = await fetch("/api/power/all").then(res => res.json());
+      // Refetch status data after sending the request
+      const updatedData = await fetch("/api/status/all").then(res =>
+        res.json()
+      );
       setPowerData(
         updatedData.map(item => ({
           ...item,
-          power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
+          status: item.status?.toUpperCase() || "UNKNOWN", // Normalize status state
         }))
       );
       setLastUpdate(Date.now()); // Update the last update time
     } catch (err) {
-      console.error(`Error sending power ${state} request:`, err);
-      alert(`Failed to power ${state} ${hostId}: ${err.message}`);
+      console.error(`Error sending status ${state} request:`, err);
+      alert(`Failed to status ${state} ${hostId}: ${err.message}`);
     }
   };
 
@@ -104,7 +106,7 @@ function PowerStatus() {
           : "No updates yet"}
       </p>
       <div>
-        {powerData.length > 0 ? (
+        {statusData.length > 0 ? (
           <table border="1" cellPadding="10">
             <thead>
               <tr>
@@ -116,14 +118,14 @@ function PowerStatus() {
               </tr>
             </thead>
             <tbody>
-              {powerData.map((item, index) => {
-                const { host, power, reachable } = item; // Extract host, power, and reachable state
+              {statusData.map((item, index) => {
+                const { host, status, reachable } = item; // Extract host, status, and reachable state
                 const hostId = host.replace("hp", ""); // Extract numeric ID from host
 
-                // Determine LED color based on power and reachable state
+                // Determine LED color based on status and reachable state
                 const getLedColor = () => {
                   if (reachable) return "green"; // Green if online
-                  switch (power) {
+                  switch (status) {
                     case "ON":
                       return "yellow";
                     case "OFF":
@@ -137,7 +139,7 @@ function PowerStatus() {
                 return (
                   <tr key={index}>
                     <td>{host}</td>
-                    <td>{power}</td>
+                    <td>{status}</td>
                     <td>{reachable ? "Yes" : "No"}</td>
                     <td>
                       <div
@@ -153,20 +155,20 @@ function PowerStatus() {
                       <button
                         style={{ marginRight: "10px" }}
                         onClick={() => handlePowerState(hostId, "OFF")}
-                        disabled={power === "OFF" || power === "UNKNOWN"} // Disable if OFF or UNKNOWN
+                        disabled={status === "OFF" || status === "UNKNOWN"} // Disable if OFF or UNKNOWN
                       >
                         Power Off
                       </button>
                       <button
                         style={{ marginRight: "10px" }}
                         onClick={() => handlePowerState(hostId, "ON")}
-                        disabled={power === "ON" || power === "UNKNOWN"} // Disable if ON or UNKNOWN
+                        disabled={status === "ON" || status === "UNKNOWN"} // Disable if ON or UNKNOWN
                       >
                         Power On
                       </button>
                       <button
                         onClick={() => handlePowerState(hostId, "RESET")}
-                        disabled={power === "OFF" || power === "UNKNOWN"} // Disable RESET if OFF or UNKNOWN
+                        disabled={status === "OFF" || status === "UNKNOWN"} // Disable RESET if OFF or UNKNOWN
                       >
                         Power Reset
                       </button>
@@ -177,7 +179,7 @@ function PowerStatus() {
             </tbody>
           </table>
         ) : (
-          <p>Loading power status...</p>
+          <p>Loading status status...</p>
         )}
       </div>
     </div>

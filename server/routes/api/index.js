@@ -4,7 +4,7 @@ const ping = require("ping");
 
 const ILO_TIMEOUT = 60000;
 
-router.get("/power/all", async (req, res) => {
+router.get("/status/all", async (req, res) => {
   const hosts = [
     { name: "hp1", ip: "10.0.20.11" },
     { name: "hp2", ip: "10.0.20.12" },
@@ -19,15 +19,15 @@ router.get("/power/all", async (req, res) => {
       hosts.map(
         host =>
           new Promise(resolve => {
-            const command = `ilo ${host.name} power`;
+            const command = `ilo ${host.name} status`;
 
             exec(command, commandTimeout, async (error, stdout, stderr) => {
-              let powerStatus = "UNKNOWN";
+              let statusStatus = "UNKNOWN";
               let reachable = false;
 
-              // Parse the power status from `ilo` command
+              // Parse the status status from `ilo` command
               if (!error && !stderr) {
-                powerStatus =
+                statusStatus =
                   stdout
                     .split("currently: ")[1]
                     ?.split("\r\n\r\n")[0]
@@ -52,7 +52,7 @@ router.get("/power/all", async (req, res) => {
 
               resolve({
                 host: host.name,
-                power: powerStatus,
+                status: statusStatus,
                 reachable,
               });
             });
@@ -63,12 +63,12 @@ router.get("/power/all", async (req, res) => {
     // Send the aggregated results as a response
     res.json(results);
   } catch (err) {
-    console.error("Error processing /power/all:", err.message);
-    res.status(500).json({ error: "Failed to retrieve power statuses" });
+    console.error("Error processing /status/all:", err.message);
+    res.status(500).json({ error: "Failed to retrieve status statuses" });
   }
 });
 
-router.get("/power/HP/:id", (req, res) => {
+router.get("/status/HP/:id", (req, res) => {
   const host = `hp${req.params.id}`;
   const command = `ilo ${host} POWER`; // Build the command
 
@@ -90,12 +90,12 @@ router.get("/power/HP/:id", (req, res) => {
     // Send the command output as a JSON response
     res.json({
       host,
-      power: stdout.trim(),
+      status: stdout.trim(),
     });
   });
 });
 
-router.put("/power/HP/:id", (req, res) => {
+router.put("/status/HP/:id", (req, res) => {
   const host = `hp${req.params.id}`;
   const { state } = req.body; // Extract "state" from the request payload
 
