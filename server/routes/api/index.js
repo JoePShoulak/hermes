@@ -21,6 +21,9 @@ router.get("/power/HP/:id", (req, res) => {
       });
     }
 
+    // parse stdout
+    stdout = stdout.split("power: ")[1].split("\r\n\r\n")[0];
+
     // Send the command output as a JSON response
     res.json({
       host,
