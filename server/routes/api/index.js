@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { exec } = require("child_process");
 
-const ILO_TIMEOUT = 30000;
+const ILO_TIMEOUT = 60000;
 
 router.get("/power/all", async (req, res) => {
   const hosts = ["hp1", "hp2", "hp3", "hp4"]; // Define the hosts
