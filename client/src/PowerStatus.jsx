@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 function PowerStatus() {
   const [powerData, setPowerData] = useState([]); // Store power data from API
   const [error, setError] = useState(null); // Store errors if API fails
+  const [lastUpdate, setLastUpdate] = useState(null); // Track last update time
+  const [elapsedTime, setElapsedTime] = useState(0); // Time elapsed since last update
 
   // Fetch power data from the API
   useEffect(() => {
@@ -19,6 +21,7 @@ function PowerStatus() {
             power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
           }))
         ); // Update power data in state
+        setLastUpdate(Date.now()); // Update the last update time
       } catch (err) {
         console.error("Error fetching power data:", err);
         setError(err.message);
@@ -27,6 +30,17 @@ function PowerStatus() {
 
     fetchData(); // Initial fetch
   }, []); // Run only once on component mount
+
+  // Timer to update elapsed time
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (lastUpdate) {
+        setElapsedTime(Math.floor((Date.now() - lastUpdate) / 1000));
+      }
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [lastUpdate]);
 
   // Function to send power state requests (ON/OFF/RESET)
   async function handlePowerState(hostId, state) {
@@ -54,16 +68,31 @@ function PowerStatus() {
           power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
         }))
       );
+      setLastUpdate(Date.now()); // Update the last update time
     } catch (err) {
       console.error(`Error sending power ${state} request:`, err);
       alert(`Failed to power ${state} ${hostId}: ${err.message}`);
     }
   }
 
+  // Format elapsed time into hh:mm:ss
+  const formatElapsedTime = seconds => {
+    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  };
+
   return (
     <div>
       <h1>Power Status</h1>
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      <p>
+        Last update:{" "}
+        {lastUpdate
+          ? `${formatElapsedTime(elapsedTime)} ago`
+          : "No updates yet"}
+      </p>
       <div>
         {powerData.length > 0 ? (
           <table border="1" cellPadding="10">
