@@ -1,56 +1,43 @@
-const express = require("express");
+const router = require("express").Router();
 const { exec } = require("child_process");
 
-const router = express.Router();
+const ILO_TIMEOUT = 30000;
 
-// Helper function to execute a command and return a promise
-function executeCommand(command) {
-  return new Promise((resolve, reject) => {
-    exec(command, { timeout: 10000 }, (error, stdout, stderr) => {
-      if (error || stderr) {
-        return reject({ error: error.message || stderr.trim() });
-      }
-      resolve(stdout.trim());
-    });
-  });
-}
-
-// Route to get power status for a specific host
-router.get("/power/HP/:id", async (req, res) => {
-  const host = `hp${req.params.id}`;
-  const command = `ilo ${host} power`;
-
-  try {
-    const output = await executeCommand(command);
-    res.json({ host, output });
-  } catch (err) {
-    res.status(500).json({ host, error: err.error });
-  }
+router.get("/power/all", (req, res) => {
+  res.json("all");
 });
 
-// Route to get power status for all hosts
-router.get("/power/all", async (req, res) => {
-  const hosts = ["hp1", "hp2", "hp3", "hp4"]; // List of hosts
-  const commands = hosts.map(host => ({
-    host,
-    command: `ilo ${host} power`,
-  }));
+router.get("/power/HP/:id", (req, res) => {
+  const host = `hp${req.params.id}`;
+  const command = `ilo ${host} power`; // Build the command
 
-  try {
-    const results = await Promise.all(
-      commands.map(async ({ host, command }) => {
-        try {
-          const output = await executeCommand(command);
-          return { host, output };
-        } catch (err) {
-          return { host, error: err.error }; // Capture errors per host
-        }
-      })
-    );
-    res.json(results); // Return all results as an array
-  } catch (err) {
-    res.status(500).json({ error: "Failed to retrieve power statuses" });
-  }
+  exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
+    if (error || stderr) {
+      console.error(
+        `Error executing command for ${host}:`,
+        error.message || stderr
+      );
+      return res.status(500).json({
+        error: `Failed to run command for ${host}`,
+        details: error.message || stderr,
+      });
+    }
+
+    // parse stdout
+    stdout = stdout.split("currently: ")[1].split("\r\n\r\n")[0];
+
+    // Send the command output as a JSON response
+    res.json({
+      host,
+      power: stdout.trim(),
+    });
+  });
+});
+
+router.put("/power/HP/:id", (req, res) => {
+  const id = req.params.id;
+  const update = req.body.update;
+  res.json({ id, update });
 });
 
 module.exports = router;
