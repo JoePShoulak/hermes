@@ -85,7 +85,7 @@ router.put("/power/HP/:id", (req, res) => {
     return res.status(400).json({ error: "Missing 'state' in request body" });
   }
 
-  const command = `ilo ${host} power ${state}`; // Build the command
+  const command = `ilo ${host} POWER ${state}`; // Build the command
   console.log(`Running command: ${command}`);
 
   exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
