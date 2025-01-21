@@ -140,20 +140,20 @@ function PowerStatus() {
                       <button
                         style={{ marginRight: "10px" }}
                         onClick={() => handlePowerState(hostId, "OFF")}
-                        disabled={power === "OFF"} // Disable if already OFF
+                        disabled={power === "OFF" || power === "UNKNOWN"} // Disable if OFF or UNKNOWN
                       >
                         Power Off
                       </button>
                       <button
                         style={{ marginRight: "10px" }}
                         onClick={() => handlePowerState(hostId, "ON")}
-                        disabled={power === "ON"} // Disable if already ON
+                        disabled={power === "ON" || power === "UNKNOWN"} // Disable if ON or UNKNOWN
                       >
                         Power On
                       </button>
                       <button
                         onClick={() => handlePowerState(hostId, "RESET")}
-                        disabled={power === "OFF"} // Disable RESET if OFF
+                        disabled={power === "OFF" || power === "UNKNOWN"} // Disable RESET if OFF or UNKNOWN
                       >
                         Power Reset
                       </button>
