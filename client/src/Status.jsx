@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-function PowerStatus() {
+function Status() {
   const [statusData, setPowerData] = useState([]); // Store status data from API
   const [error, setError] = useState(null); // Store errors if API fails
   const [lastUpdate, setLastUpdate] = useState(null); // Track last update time
@@ -186,4 +186,4 @@ function PowerStatus() {
   );
 }
 
-export default PowerStatus;
+export default Status;

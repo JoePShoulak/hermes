@@ -1,10 +1,10 @@
 import React from "react";
-import PowerStatus from "./PowerStatus";
+import Status from "./Status";
 
 function App() {
   return (
     <div>
-      <PowerStatus />
+      <Status />
     </div>
   );
 }
