@@ -97,7 +97,7 @@ function PowerStatus() {
 
   return (
     <div>
-      <h1>Power Status</h1>
+      <h1>Status</h1>
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
       <p>
         Last update:{" "}
