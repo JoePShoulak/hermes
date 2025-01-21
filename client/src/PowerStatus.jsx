@@ -19,9 +19,8 @@ function PowerStatus() {
           ...item,
           power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
         }))
-      );
+      ); // Update power data in state
       setLastUpdate(Date.now()); // Update the last update time
-      setError(null); // Clear any previous error on successful fetch
     } catch (err) {
       console.error("Error fetching power data:", err);
       setError(err.message);
@@ -80,7 +79,6 @@ function PowerStatus() {
         }))
       );
       setLastUpdate(Date.now()); // Update the last update time
-      setError(null);
     } catch (err) {
       console.error(`Error sending power ${state} request:`, err);
       alert(`Failed to power ${state} ${hostId}: ${err.message}`);
@@ -104,15 +102,7 @@ function PowerStatus() {
         {lastUpdate
           ? `${formatElapsedTime(elapsedTime)} ago`
           : "No updates yet"}
-        {/* 
-          REFRESH BUTTON:
-          Calls fetchData() again to update the power data manually
-        */}
-        <button onClick={fetchData} style={{ marginLeft: "10px" }}>
-          Refresh
-        </button>
       </p>
-
       <div>
         {powerData.length > 0 ? (
           <table border="1" cellPadding="10">
@@ -163,18 +153,21 @@ function PowerStatus() {
                       <button
                         style={{ marginRight: "10px" }}
                         onClick={() => handlePowerState(hostId, "OFF")}
-                        disabled={power === "OFF" || power === "UNKNOWN"}>
+                        disabled={power === "OFF" || power === "UNKNOWN"} // Disable if OFF or UNKNOWN
+                      >
                         Power Off
                       </button>
                       <button
                         style={{ marginRight: "10px" }}
                         onClick={() => handlePowerState(hostId, "ON")}
-                        disabled={power === "ON" || power === "UNKNOWN"}>
+                        disabled={power === "ON" || power === "UNKNOWN"} // Disable if ON or UNKNOWN
+                      >
                         Power On
                       </button>
                       <button
                         onClick={() => handlePowerState(hostId, "RESET")}
-                        disabled={power === "OFF" || power === "UNKNOWN"}>
+                        disabled={power === "OFF" || power === "UNKNOWN"} // Disable RESET if OFF or UNKNOWN
+                      >
                         Power Reset
                       </button>
                     </td>
