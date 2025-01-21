@@ -8,7 +8,7 @@ function PowerStatus() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/power/all"); // Fetch from backend API
+        const response = await fetch("/api/power/all"); // Correct endpoint
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

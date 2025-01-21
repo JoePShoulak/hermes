@@ -5,8 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/power": {
-        target: "http://localhost:5000", // Replace with your backend's address
+      "/api": {
+        target: "http://localhost:5000", // Backend server address
         changeOrigin: true,
       },
     },
