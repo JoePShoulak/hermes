@@ -57,6 +57,7 @@ router.get("/status/all", async (req, res) => {
               if (reachable && statusStatus.toUpperCase() === "ON") {
                 try {
                   // Example Docker command: "docker ps | tail -n +2 | wc -l"
+                  console.log(host);
                   // Adjust user (myUser) or command as needed.
                   const dockerCmd = `ssh myUser@${host.ip} "sudo docker ps | tail -n +2 | wc -l"`;
                   const dockerOutput = execSync(dockerCmd, { timeout: 5000 });
