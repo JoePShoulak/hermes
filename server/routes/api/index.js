@@ -54,8 +54,6 @@ router.get("/power/HP/:id", (req, res) => {
   const host = `hp${req.params.id}`;
   const command = `ilo ${host} power`; // Build the command
 
-  console.log(`Running command: ${command}`);
-
   exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
     if (error || stderr) {
       console.error(
@@ -88,6 +86,7 @@ router.put("/power/HP/:id", (req, res) => {
   }
 
   const command = `ilo ${host} power ${state}`; // Build the command
+  console.log(`Running command: ${command}`);
 
   exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
     if (error || stderr) {
