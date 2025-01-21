@@ -23,7 +23,7 @@ function PowerStatus() {
     fetchData();
   }, []); // Run once on component mount
 
-  // Function to handle power requests (ON/OFF)
+  // Function to handle power state requests (ON/OFF/RESET)
   async function handlePowerState(hostId, state) {
     try {
       const response = await fetch(`/api/power/hp/${hostId}`, {
@@ -71,16 +71,24 @@ function PowerStatus() {
                   <td>{item.power || "Unknown"}</td>
                   <td>
                     <button
+                      style={{ marginRight: "10px" }}
                       onClick={() =>
                         handlePowerState(item.host.replace("hp", ""), "OFF")
                       }>
                       Power Off
-                    </button>{" "}
+                    </button>
                     <button
+                      style={{ marginRight: "10px" }}
                       onClick={() =>
                         handlePowerState(item.host.replace("hp", ""), "ON")
                       }>
                       Power On
+                    </button>
+                    <button
+                      onClick={() =>
+                        handlePowerState(item.host.replace("hp", ""), "RESET")
+                      }>
+                      Power Reset
                     </button>
                   </td>
                 </tr>
