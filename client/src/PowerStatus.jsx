@@ -75,7 +75,7 @@ function PowerStatus() {
                         handlePowerState(item.host.replace("hp", ""), "OFF")
                       }>
                       Power Off
-                    </button>
+                    </button>{" "}
                     <button
                       onClick={() =>
                         handlePowerState(item.host.replace("hp", ""), "ON")
