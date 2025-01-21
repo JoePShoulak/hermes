@@ -99,6 +99,9 @@ router.put("/power/HP/:id", (req, res) => {
       });
     }
 
+    // parse stdout
+    stdout = stdout.split("\r\n")[0];
+
     // Parse and return the command output
     res.json({
       host,
