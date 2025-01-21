@@ -44,6 +44,15 @@ function PowerStatus() {
 
   // Function to send power state requests (ON/OFF/RESET)
   async function handlePowerState(hostId, state) {
+    // Instantly update the local state to show UNKNOWN for the clicked host
+    setPowerData(prevData =>
+      prevData.map(item =>
+        item.host.replace("hp", "") === hostId
+          ? { ...item, power: "UNKNOWN" }
+          : item
+      )
+    );
+
     try {
       const response = await fetch(`/api/power/hp/${hostId}`, {
         method: "PUT",
