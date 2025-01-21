@@ -148,7 +148,7 @@ function Status() {
 
                 return (
                   <tr key={index}>
-                    <td>{host}</td>
+                    <td>{host.toUpperCase()}</td>
                     <td>{status}</td>
                     <td>{reachable ? "Yes" : "No"}</td>
                     <td>
