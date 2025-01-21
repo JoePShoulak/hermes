@@ -1,56 +1,41 @@
 const router = require("express").Router();
 const { exec } = require("child_process");
-const ping = require("ping");
 
-const ILO_TIMEOUT = 30000;
+const ILO_TIMEOUT = 60000;
 
 router.get("/power/all", async (req, res) => {
-  const hosts = [
-    { name: "hp1", ip: "10.0.20.11" },
-    { name: "hp2", ip: "10.0.20.12" },
-    { name: "hp3", ip: "10.0.20.13" },
-    { name: "hp4", ip: "10.0.20.14" },
-  ];
-
+  const hosts = ["hp1", "hp2", "hp3", "hp4"]; // Define the hosts
   const commandTimeout = { timeout: ILO_TIMEOUT };
 
   try {
-    // Use Promise.all to execute `ilo` commands and ping concurrently
+    // Use Promise.all to execute `ilo` commands for all hosts
     const results = await Promise.all(
       hosts.map(
         host =>
           new Promise(resolve => {
-            const command = `ilo ${host.name} power`;
+            const command = `ilo ${host} power`;
 
-            exec(command, commandTimeout, async (error, stdout, stderr) => {
-              // Default power and reachable status
-              let powerStatus = "UNKNOWN";
-              let reachable = false;
-
-              // If the power command is successful, parse its result
-              if (!error && !stderr) {
-                powerStatus =
-                  stdout
-                    .split("currently: ")[1]
-                    ?.split("\r\n\r\n")[0]
-                    ?.trim() || "UNKNOWN";
-              }
-
-              // Perform a ping check
-              try {
-                const pingResult = await ping.promise.probe(host.ip);
-                reachable = pingResult.alive;
-              } catch (pingError) {
+            exec(command, commandTimeout, (error, stdout, stderr) => {
+              if (error || stderr) {
                 console.error(
-                  `Ping failed for ${host.name}:`,
-                  pingError.message
+                  `Error executing command for ${host}:`,
+                  error.message || stderr
                 );
+                return resolve({
+                  host,
+                  error: `Failed to run command for ${host}`,
+                  details: error.message || stderr,
+                });
               }
+
+              // Parse stdout
+              const powerStatus =
+                stdout.split("currently: ")[1]?.split("\r\n\r\n")[0]?.trim() ||
+                "Unknown";
 
               resolve({
-                host: host.name,
+                host,
                 power: powerStatus,
-                reachable,
               });
             });
           })
