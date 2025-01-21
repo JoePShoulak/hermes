@@ -23,15 +23,15 @@ function PowerStatus() {
     fetchData();
   }, []); // Run once on component mount
 
-  // Function to handle power-off requests
-  async function handlePowerOff(hostId) {
+  // Function to handle power requests (ON/OFF)
+  async function handlePowerState(hostId, state) {
     try {
       const response = await fetch(`/api/power/hp/${hostId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ state: "OFF" }),
+        body: JSON.stringify({ state }),
       });
 
       if (!response.ok) {
@@ -39,14 +39,14 @@ function PowerStatus() {
       }
 
       const result = await response.json();
-      console.log(`Power off for ${hostId} successful:`, result);
+      console.log(`Power ${state} for ${hostId} successful:`, result);
 
       // Optional: Refetch the power status after the action
       const updatedData = await fetch("/api/power/all").then(res => res.json());
       setPowerData(updatedData);
     } catch (err) {
-      console.error("Error sending power-off request:", err);
-      alert(`Failed to power off ${hostId}: ${err.message}`);
+      console.error(`Error sending power ${state} request:`, err);
+      alert(`Failed to power ${state} ${hostId}: ${err.message}`);
     }
   }
 
@@ -72,9 +72,15 @@ function PowerStatus() {
                   <td>
                     <button
                       onClick={() =>
-                        handlePowerOff(item.host.replace("hp", ""))
+                        handlePowerState(item.host.replace("hp", ""), "OFF")
                       }>
                       Power Off
+                    </button>
+                    <button
+                      onClick={() =>
+                        handlePowerState(item.host.replace("hp", ""), "ON")
+                      }>
+                      Power On
                     </button>
                   </td>
                 </tr>
