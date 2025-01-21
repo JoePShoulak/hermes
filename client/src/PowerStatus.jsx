@@ -13,7 +13,12 @@ function PowerStatus() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setPowerData(data); // Update power data in state
+        setPowerData(
+          data.map(item => ({
+            ...item,
+            power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
+          }))
+        ); // Update power data in state
       } catch (err) {
         console.error("Error fetching power data:", err);
         setError(err.message);
@@ -43,7 +48,12 @@ function PowerStatus() {
 
       // Refetch power data after sending the request
       const updatedData = await fetch("/api/power/all").then(res => res.json());
-      setPowerData(updatedData);
+      setPowerData(
+        updatedData.map(item => ({
+          ...item,
+          power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
+        }))
+      );
     } catch (err) {
       console.error(`Error sending power ${state} request:`, err);
       alert(`Failed to power ${state} ${hostId}: ${err.message}`);
@@ -66,13 +76,13 @@ function PowerStatus() {
             </thead>
             <tbody>
               {powerData.map((item, index) => {
-                const { host, power } = item; // Extract host and power state
+                const { host, power } = item; // Extract host and normalized power state
                 const hostId = host.replace("hp", ""); // Extract numeric ID from host
 
                 return (
                   <tr key={index}>
                     <td>{host}</td>
-                    <td>{power || "Unknown"}</td>
+                    <td>{power}</td>
                     <td>
                       <button
                         style={{ marginRight: "10px" }}
