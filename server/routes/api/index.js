@@ -106,6 +106,7 @@ router.put("/power/HP/:id", (req, res) => {
     res.json({
       host,
       state,
+      command,
       output: stdout.trim(),
     });
   });
