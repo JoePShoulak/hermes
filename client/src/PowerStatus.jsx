@@ -7,28 +7,29 @@ function PowerStatus() {
   const [elapsedTime, setElapsedTime] = useState(0); // Time elapsed since last update
 
   // Fetch power data from the API
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch("/api/power/all"); // Call the API
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setPowerData(
-          data.map(item => ({
-            ...item,
-            power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
-          }))
-        ); // Update power data in state
-        setLastUpdate(Date.now()); // Update the last update time
-      } catch (err) {
-        console.error("Error fetching power data:", err);
-        setError(err.message);
+  const fetchData = async () => {
+    try {
+      const response = await fetch("/api/power/all"); // Call the API
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      const data = await response.json();
+      setPowerData(
+        data.map(item => ({
+          ...item,
+          power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
+        }))
+      ); // Update power data in state
+      setLastUpdate(Date.now()); // Update the last update time
+    } catch (err) {
+      console.error("Error fetching power data:", err);
+      setError(err.message);
     }
+  };
 
-    fetchData(); // Initial fetch
+  // Run fetchData on component mount
+  useEffect(() => {
+    fetchData();
   }, []); // Run only once on component mount
 
   // Timer to update elapsed time
@@ -41,39 +42,6 @@ function PowerStatus() {
 
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [lastUpdate]);
-
-  // Function to send power state requests (ON/OFF/RESET)
-  async function handlePowerState(hostId, state) {
-    try {
-      const response = await fetch(`/api/power/hp/${hostId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ state }), // Pass the state (e.g., ON, OFF, RESET)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log(`Power ${state} for ${hostId} successful:`, result);
-
-      // Refetch power data after sending the request
-      const updatedData = await fetch("/api/power/all").then(res => res.json());
-      setPowerData(
-        updatedData.map(item => ({
-          ...item,
-          power: item.power?.toUpperCase() || "UNKNOWN", // Normalize power state
-        }))
-      );
-      setLastUpdate(Date.now()); // Update the last update time
-    } catch (err) {
-      console.error(`Error sending power ${state} request:`, err);
-      alert(`Failed to power ${state} ${hostId}: ${err.message}`);
-    }
-  }
 
   // Format elapsed time into hh:mm:ss
   const formatElapsedTime = seconds => {
@@ -106,11 +74,12 @@ function PowerStatus() {
             </thead>
             <tbody>
               {powerData.map((item, index) => {
-                const { host, power } = item; // Extract host and normalized power state
+                const { host, power, reachable } = item; // Extract host, power, and reachable
                 const hostId = host.replace("hp", ""); // Extract numeric ID from host
 
-                // Determine LED color based on power state
-                const getLedColor = power => {
+                // Determine LED color based on power and reachable state
+                const getLedColor = () => {
+                  if (reachable) return "green";
                   switch (power) {
                     case "ON":
                       return "yellow";
@@ -132,7 +101,7 @@ function PowerStatus() {
                           width: "20px",
                           height: "20px",
                           borderRadius: "50%",
-                          backgroundColor: getLedColor(power),
+                          backgroundColor: getLedColor(),
                           margin: "auto",
                         }}></div>
                     </td>
