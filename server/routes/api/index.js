@@ -9,7 +9,7 @@ router.get("/power/HP/:id", (req, res) => {
   const host = `hp${req.params.id}`;
   const command = `ilo ${host} power`; // Build the command
 
-  exec(command, { timeout: 10000 }, (error, stdout, stderr) => {
+  exec(command, { timeout: 30000 }, (error, stdout, stderr) => {
     if (error || stderr) {
       console.error(
         `Error executing command for ${host}:`,
