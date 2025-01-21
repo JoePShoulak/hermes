@@ -8,7 +8,7 @@ function PowerStatus() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/power/all"); // Fetch from the backend
+        const response = await fetch("/api/power/all"); // Fetch from backend
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -21,7 +21,34 @@ function PowerStatus() {
     }
 
     fetchData();
-  }, []); // Fetch only once when the component mounts
+  }, []); // Run once on component mount
+
+  // Function to handle power-off requests
+  async function handlePowerOff(hostId) {
+    try {
+      const response = await fetch(`/api/power/hp/${hostId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ state: "off" }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log(`Power off for ${hostId} successful:`, result);
+
+      // Optional: Refetch the power status after the action
+      const updatedData = await fetch("/api/power/all").then(res => res.json());
+      setPowerData(updatedData);
+    } catch (err) {
+      console.error("Error sending power-off request:", err);
+      alert(`Failed to power off ${hostId}: ${err.message}`);
+    }
+  }
 
   return (
     <div>
@@ -35,6 +62,7 @@ function PowerStatus() {
                 <th>Host</th>
                 <th>Power Status</th>
                 <th>Error Details</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -43,6 +71,14 @@ function PowerStatus() {
                   <td>{item.host}</td>
                   <td>{item.power || "Unknown"}</td>
                   <td>{item.error || "None"}</td>
+                  <td>
+                    <button
+                      onClick={() =>
+                        handlePowerOff(item.host.replace("hp", ""))
+                      }>
+                      Power Off
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
