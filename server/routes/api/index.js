@@ -19,7 +19,7 @@ router.get("/status/all", async (req, res) => {
       hosts.map(
         host =>
           new Promise(resolve => {
-            const command = `ilo ${host.name} status`;
+            const command = `ilo ${host.name} POWER`;
 
             exec(command, commandTimeout, async (error, stdout, stderr) => {
               let statusStatus = "UNKNOWN";
