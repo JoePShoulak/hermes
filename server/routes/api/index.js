@@ -100,7 +100,7 @@ router.put("/power/HP/:id", (req, res) => {
       });
     }
 
-    console.log(`no errors (${host})`);
+    console.log(`- no errors (${host})`);
 
     // parse stdout
     stdout = stdout.split("\r\n")[0];
