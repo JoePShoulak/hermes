@@ -1,45 +1,48 @@
 const router = require("express").Router();
-const { exec } = require("child_process");
+const { exec, execSync } = require("child_process"); // <–– Add execSync
 const ping = require("ping");
 
 const ILO_TIMEOUT = 60000;
 
 router.get("/status/all", async (req, res) => {
+  // IPs here are the OS IPs where you can SSH for docker info.
+  // The "name" is the argument used by the `ilo` command.
   const hosts = [
     { name: "hp1", ip: "10.0.20.11" },
     { name: "hp2", ip: "10.0.20.12" },
     { name: "hp3", ip: "10.0.20.13" },
     { name: "hp4", ip: "10.0.20.14" },
-  ]; // Define the hosts with their IPs
+  ];
   const commandTimeout = { timeout: ILO_TIMEOUT };
 
   try {
-    // Use Promise.all to execute `ilo` commands and ping checks for all hosts
+    // Use Promise.all to execute `ilo` + ping + container checks in parallel
     const results = await Promise.all(
       hosts.map(
         host =>
           new Promise(resolve => {
-            const command = `ilo ${host.name} POWER`;
+            const iloCommand = `ilo ${host.name} POWER`;
 
-            exec(command, commandTimeout, async (error, stdout, stderr) => {
+            exec(iloCommand, commandTimeout, async (error, stdout, stderr) => {
               let statusStatus = "UNKNOWN";
               let reachable = false;
+              let containerCount = 0; // Default if unreachable or OFF
 
-              // Parse the status status from `ilo` command
+              // 1) Parse power status from `ilo` command
               if (!error && !stderr) {
-                statusStatus =
-                  stdout
-                    .split("currently: ")[1]
-                    ?.split("\r\n\r\n")[0]
-                    ?.trim() || "UNKNOWN";
+                const match = stdout
+                  .split("currently: ")[1]
+                  ?.split("\r\n\r\n")[0]
+                  ?.trim();
+                statusStatus = match || "UNKNOWN";
               } else {
                 console.error(
-                  `Error executing command for ${host.name}:`,
+                  `Error executing iLO command for ${host.name}:`,
                   error?.message || stderr
                 );
               }
 
-              // Perform a ping check
+              // 2) Ping the server's OS IP
               try {
                 const pingResult = await ping.promise.probe(host.ip);
                 reachable = pingResult.alive;
@@ -50,10 +53,29 @@ router.get("/status/all", async (req, res) => {
                 );
               }
 
+              // 3) If the server is ON + reachable, SSH to get container count
+              if (reachable && statusStatus.toUpperCase() === "ON") {
+                try {
+                  // Example Docker command: "docker ps | tail -n +2 | wc -l"
+                  // Adjust user (myUser) or command as needed.
+                  const dockerCmd = `ssh myUser@${host.ip} "sudo docker ps | tail -n +2 | wc -l"`;
+                  const dockerOutput = execSync(dockerCmd, { timeout: 5000 });
+                  containerCount =
+                    parseInt(dockerOutput.toString().trim(), 10) || 0;
+                } catch (dockerErr) {
+                  console.error(
+                    `Docker ps failed for ${host.name}:`,
+                    dockerErr.message
+                  );
+                }
+              }
+
+              // 4) Resolve final data for this host
               resolve({
                 host: host.name,
                 status: statusStatus,
                 reachable,
+                containers: containerCount,
               });
             });
           })
@@ -64,13 +86,16 @@ router.get("/status/all", async (req, res) => {
     res.json(results);
   } catch (err) {
     console.error("Error processing /status/all:", err.message);
-    res.status(500).json({ error: "Failed to retrieve status statuses" });
+    res
+      .status(500)
+      .json({ error: "Failed to retrieve status and container info" });
   }
 });
 
+// GET single host iLO status
 router.get("/status/HP/:id", (req, res) => {
   const host = `hp${req.params.id}`;
-  const command = `ilo ${host} POWER`; // Build the command
+  const command = `ilo ${host} POWER`; // iLO command
 
   exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
     if (error || stderr) {
@@ -87,7 +112,7 @@ router.get("/status/HP/:id", (req, res) => {
     // parse stdout
     stdout = stdout.split("currently: ")[1]?.split("\r\n\r\n")[0] || "UNKNOWN";
 
-    // Send the command output as a JSON response
+    // Send the command output as JSON
     res.json({
       host,
       status: stdout.trim(),
@@ -95,6 +120,7 @@ router.get("/status/HP/:id", (req, res) => {
   });
 });
 
+// PUT request to power host ON/OFF/RESET
 router.put("/status/HP/:id", (req, res) => {
   const host = `hp${req.params.id}`;
   const { state } = req.body; // Extract "state" from the request payload
@@ -103,7 +129,7 @@ router.put("/status/HP/:id", (req, res) => {
     return res.status(400).json({ error: "Missing 'state' in request body" });
   }
 
-  const command = `ilo ${host} POWER ${state}`; // Build the command
+  const command = `ilo ${host} POWER ${state}`; // e.g. "ilo hp2 POWER ON"
   console.log(`Running command: ${command}`);
 
   exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
@@ -123,7 +149,6 @@ router.put("/status/HP/:id", (req, res) => {
     // parse stdout
     stdout = stdout.split("\r\n")[0];
 
-    // Parse and return the command output
     res.json({
       host,
       state,
