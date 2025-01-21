@@ -50,6 +50,17 @@ function PowerStatus() {
     }
   }
 
+  // Helper function to check button states
+  const isButtonDisabled = (currentStatus, buttonState) => {
+    if (currentStatus === "ON" && buttonState === "ON") return true;
+    if (
+      currentStatus === "OFF" &&
+      (buttonState === "OFF" || buttonState === "RESET")
+    )
+      return true;
+    return false; // Enable for UNKNOWN or valid transitions
+  };
+
   return (
     <div>
       <h1>Power Status</h1>
@@ -74,20 +85,23 @@ function PowerStatus() {
                       style={{ marginRight: "10px" }}
                       onClick={() =>
                         handlePowerState(item.host.replace("hp", ""), "OFF")
-                      }>
+                      }
+                      disabled={isButtonDisabled(item.power, "OFF")}>
                       Power Off
                     </button>
                     <button
                       style={{ marginRight: "10px" }}
                       onClick={() =>
                         handlePowerState(item.host.replace("hp", ""), "ON")
-                      }>
+                      }
+                      disabled={isButtonDisabled(item.power, "ON")}>
                       Power On
                     </button>
                     <button
                       onClick={() =>
                         handlePowerState(item.host.replace("hp", ""), "RESET")
-                      }>
+                      }
+                      disabled={isButtonDisabled(item.power, "RESET")}>
                       Power Reset
                     </button>
                   </td>
