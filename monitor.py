@@ -18,10 +18,10 @@ def execute_command(command, parser=lambda output: output):
 # GETTERS / SETTERS / PARSERS
 # # POWER
 def get_power(target):
-    return execute_command(f"ilo {target} POWER")
+    return execute_command(f"ilo {target} POWER", parse_power)
     
 def set_power(target, value):
-    return execute_command(f"ilo {target} POWER {value}")
+    return execute_command(f"ilo {target} POWER {value}", parse_power)
     
 def parse_power(output):
     match = re.search(r"\b(On|Off)\b", output, re.IGNORECASE)
@@ -31,7 +31,7 @@ HPs = ["hp1", "hp2", "hp3", "hp4"]
 
 if __name__ == "__main__":
     for tgt in HPs:
-        print("HP1:", get_power(tgt))
+        print(tgt.upper(), get_power(tgt))
           
     print("Shutting off HP2...", set_power("hp2", "OFF"))
     print("Shutting off HP3...", set_power("hp3", "OFF"))
