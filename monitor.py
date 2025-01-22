@@ -93,6 +93,7 @@ def get_status(target):
 	
     status["power"] = True if status["online"] else get_power(target)
     status["uid"] = False if not status["power"] else get_UID(target)
+    print(status["uid"])
     
     return status
 
