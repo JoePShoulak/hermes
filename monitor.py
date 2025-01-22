@@ -37,7 +37,7 @@ def set_power(target, value):
 # # Online
 def get_online(target):
 	try: 
-		return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1 received|0 received)\b")) == "1 received"
+		return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1|0) received\b")) == "1"
 	except:
 		return False
 	
@@ -51,7 +51,7 @@ def get_docker(target):
 # # Minecraft
 def get_minecraft_users(target):
 	try:
-		return execute_command(f"ssh {target} sudo ~/bin/rcon_all list")
+		return execute_command(f"ssh {target} sudo ~/bin/rcon_all list", lambda s: re_parse)
 	except:
 		return "UNKNOWN"
 
