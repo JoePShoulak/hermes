@@ -67,7 +67,7 @@ def get_uptime(target):
 # # UID
 def get_UID(target):
     try:
-        return execute_command(f"ilo {target} UID")
+        return execute_command(f"ilo {target} UID", lambda s: re_parse(s, r"\b(On|Off)\b")=="On")
     except:
         return "UNKNOWN"
 
