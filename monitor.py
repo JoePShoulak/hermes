@@ -15,7 +15,7 @@ def color_text(text, color):
         case _:
             code = 0
 
-    return f"\033[{code}m{text}\033[0m]]"
+    return f"\033[{code}m{text}\033[0m"
 
 def get_status(target):
     status = {
