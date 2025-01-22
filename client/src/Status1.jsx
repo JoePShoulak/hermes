@@ -17,7 +17,7 @@ export default function Status1(props) {
   useEffect(() => {
     const fetchPowerStatus = async () => {
       try {
-        const result = await fetch(`/api/power/${props.target}`);
+        const result = await fetch(`/api/power/${props.target.toLowerCase()}`);
 
         const data = await result.json();
         updateStatus("powered", data.status);
