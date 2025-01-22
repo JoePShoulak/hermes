@@ -2,17 +2,19 @@ import subprocess
 
 def execute_command(command):
     try:
-        # Run the bash command
         result = subprocess.run(command, shell=True, text=True, capture_output=True, check=True)
-        # Print the command's output
-        print("Output:", result.stdout.strip())
+        output = result.stdout.strip()  # Get and clean up the command's output
+        return output  # Return the output for further processing
     except subprocess.CalledProcessError as e:
-        # Handle errors and print the error message
-        print("Error:", e.stderr.strip() if e.stderr else "Unknown error")
-        print("Return code:", e.returncode)
+        error_message = e.stderr.strip() if e.stderr else "Unknown error"
+        return {"error": error_message, "return_code": e.returncode}  # Return error details
 
 if __name__ == "__main__":
-    # Define the bash command
     bash_command = "ilo hp1 power"
-    # Execute the command
-    execute_command(bash_command)
+    response = execute_command(bash_command)
+
+    if isinstance(response, dict) and "error" in response:
+        print("Error:", response["error"])
+        print("Return code:", response["return_code"])
+    else:
+        print("Output:", response)  # Process the output further here if needed
