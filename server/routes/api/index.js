@@ -1,10 +1,14 @@
 const router = require("express").Router();
+const powerRoutes = require("./power");
+
+router.use("/power", powerRoutes);
+
 const { exec, execSync } = require("child_process"); // <–– Add execSync
 const ping = require("ping");
 
 const ILO_TIMEOUT = 60000;
 
-router.get("/status/all", async (req, res) => {
+router.get("/power/all", async (req, res) => {
   // IPs here are the OS IPs where you can SSH for docker info.
   // The "name" is the argument used by the `ilo` command.
   const hosts = [
@@ -85,7 +89,7 @@ router.get("/status/all", async (req, res) => {
     // Send the aggregated results as a response
     res.json(results);
   } catch (err) {
-    console.error("Error processing /status/all:", err.message);
+    console.error("Error processing /power/all:", err.message);
     res
       .status(500)
       .json({ error: "Failed to retrieve status and container info" });
@@ -93,7 +97,7 @@ router.get("/status/all", async (req, res) => {
 });
 
 // GET single host iLO status
-router.get("/status/HP/:id", (req, res) => {
+router.get("/power/HP/:id", (req, res) => {
   const host = `hp${req.params.id}`;
   const command = `ilo ${host} POWER`; // iLO command
 
@@ -121,7 +125,7 @@ router.get("/status/HP/:id", (req, res) => {
 });
 
 // PUT request to power host ON/OFF/RESET
-router.put("/status/HP/:id", (req, res) => {
+router.put("/power/HP/:id", (req, res) => {
   const host = `hp${req.params.id}`;
   const { state } = req.body; // Extract "state" from the request payload
 
