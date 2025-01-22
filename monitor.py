@@ -61,9 +61,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.command and args.target:
-        subcommand, value = args.command.split("=")
         if args.command.startswith("get_power"):
-            print(f"Getting power state for {args.target} to {value}: {get_power(args.target)}")
+            print(f"Getting power state for {args.target}: {get_power(args.target)}")
         elif args.command.startswith("set_power"):
             _, value = args.command.split("=")
             print(f"Setting power state for {args.target} to {value}: {set_power(args.target, value)}")
