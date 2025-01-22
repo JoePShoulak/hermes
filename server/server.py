@@ -1,12 +1,14 @@
 from commands import *
 from flask import Flask, jsonify
 import json
+from pathlib import Path
 
 app = Flask('Hermes')
 
 def get_data():
     try:
-        with open('data.json', 'r') as fp:
+        file_path = Path(__file__).with_name('data.json')
+        with file_path.open('r') as fp:
             return json.load(fp)
     except:
         return {}

@@ -1,5 +1,6 @@
 from commands import *
 import json
+from pathlib import Path
 
 data = {
   "ups": get_ups(),
@@ -9,5 +10,7 @@ data = {
   "hp4": get_status("hp4"),
 }
 
-with open('data.json', 'w') as fp:
+file_path = Path(__file__).with_name('data.json')
+with file_path.open('w') as fp:
   json.dump(data, fp)
+  
