@@ -28,8 +28,8 @@ def host_status(host):
 
 @app.route('/api/host/<host>/<command>/<value>', methods=['PUT'])
 def host_status_setter(host, command, value):
-    execute_command(f"ilo {host} {command.upper()} {value.upper()}")
-    return "success"
+    result = execute_command(f"ilo {host} {command.upper()} {value.upper()}")
+    return "success" if result != 'UNKNOWN' else 'failure'
 
 @app.route('/api/ups', methods=['GET'])
 def ups_status():
