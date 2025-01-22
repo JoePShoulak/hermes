@@ -6,20 +6,13 @@ class CommandExecutionError(Exception):
         super().__init__(message)
         self.return_code = return_code
 
-def execute_command(command, parser=lambda output: output):
+def execute_command(command, parser=lambda output: output, default="UNKNOWN"):
     try:
         result = subprocess.run(command, shell=True, text=True, capture_output=True, check=True)
         return parser(result.stdout.strip())  # Clean up the command's output
     except subprocess.CalledProcessError as e:
-        error_message = e.stderr.strip() if e.stderr else "Unknown error"
-        raise CommandExecutionError(error_message, e.returncode)
-    
-def nothrow_execute_command(command, parser=lambda output: output, default="UNKNOWN"):
-    try:
-        return execute_command(command, parser)
-    except CommandExecutionError:
         return default
-
+    
 # GETTERS / SETTERS / PARSERS
 # # GENERAL
 def re_parse(output, query):
@@ -28,7 +21,7 @@ def re_parse(output, query):
 
 # # UPS
 def get_ups():
-    return nothrow_execute_command("upsc myups@localhost", lambda s: re_parse(s, r"ups.status: (.*)"))
+    return execute_command("upsc myups@localhost", lambda s: re_parse(s, r"ups.status: (.*)"))
 
 # # POWER
 def get_power(target):
