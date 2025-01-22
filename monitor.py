@@ -27,11 +27,12 @@ def parse_power(output):
     match = re.search(r"\b(On|Off)\b", output, re.IGNORECASE)
     return match.group(1).capitalize() if match else "UNKNOWN"
 
+HPs = ["hp1", "hp2", "hp3", "hp4"]
+
 if __name__ == "__main__":
-    print("HP1:", get_power("hp1"))
-    print("HP2:", get_power("hp2"))
-    print("HP3:", get_power("hp3"))
-    print("HP4:", get_power("hp4"))
+    for tgt in HPs:
+        print("HP1:", get_power(tgt))
+          
     print("Shutting off HP2...", set_power("hp2", "OFF"))
     print("Shutting off HP3...", set_power("hp3", "OFF"))
     print("Shutting off HP4...", set_power("hp4", "OFF"))
