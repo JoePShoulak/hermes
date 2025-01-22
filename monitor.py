@@ -26,7 +26,8 @@ class State(Enum):
     POWERED = 1
     UNPOWERED = 0
 
-    def _
+    def __repr__(self):
+        pass
 
 class Docker(Enum):
     IN_USE = 2
