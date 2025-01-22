@@ -45,11 +45,22 @@ def get_online(target):
 HPs = ["hp1", "hp2", "hp3", "hp4"]
 
 def get_status(target):
-    status = {
-        "online": get_online(target),
-        # Add more status checks here if needed (e.g., power state)
-    }
-    return status
+	status = {
+		"power": None,
+		"online": None
+	}
+
+	if get_online(target):
+		status["online"] = True
+		status["power"] = True
+	elif get_power(target):
+		status["online"] = False
+		status["power"] = True
+	else:
+		status["online"] = False
+		status["power"] = False
+
+	return status
 
 if __name__ == "__main__":
     for hp in HPs:
