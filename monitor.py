@@ -38,7 +38,7 @@ def get_status(target):
         "online": None
 	}
     
-    print(get_online("hp1"))
+    print(get_online(target))
     
 
 if __name__ == "__main__":
