@@ -30,7 +30,7 @@ def set_power(target, value):
     
 # # Online
 def get_online(target):
-	return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1 received|0 received)\b"))
+	return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1 received|0 received)\b")) == "1 received"
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
