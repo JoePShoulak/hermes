@@ -63,6 +63,13 @@ def get_uptime(target):
         return execute_command(f"ssh {target} uptime -p").split("up ")[-1]
     except:
         return "UNKNOWN"
+    
+# # UID
+def get_UID(target):
+    try:
+        return execute_command(f"ilo {target} UID")
+    except:
+        return "UNKNOWN"
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
@@ -73,35 +80,40 @@ def get_status(target):
         "online": None,
         "docker": None,
         "minecraft_users": None,
-        "uptime": None
+        "uptime": None,
+        "uid": None,
+        # "exists": None
     }
 
     status["online"] = get_online(target)
+    
     if not status["online"]:
         status["uptime"] = "OFFLINE"
         status["docker"] = False
         status["minecraft_users"] = False
         status["power"] = get_power(target)
+        status["uid"] = False if not status["power"] else get_UID(target)
+
         return status
     
     status["power"] = True
+    status["uid"] = get_UID(target)
     status["uptime"] = get_uptime(target)
     status["docker"] = get_docker(target)
-    if not status["docker"]:
-        status["minecraft_users"] = False
-        return status
+    status["minecraft_users"] = False if not status["docker"] else get_minecraft_users(target)
     
-    status["minecraft_users"] = get_minecraft_users(target)
     return status
 
-def print_verbose_status(data):
-    for host, details in data.items():
-        print(f"\nHost: {host}")
-        print(f"  - Online: {'Yes' if details['online'] else 'No'}")
-        print(f"  - Power: {'On' if details['power'] else 'Off'}")
-        print(f"  - Uptime: {details['uptime']}")
-        print(f"  - Docker Running: {'Yes' if details['docker'] else 'No'}")
-        print(f"  - Minecraft Users: {'Yes' if details['minecraft_users'] else 'No'}")
+def prettify_status(data):
+    result = []
+    for host, status in data.items():
+        result.append(f"\nHost: {host}")
+        result.append(f"  - Online: {'Yes' if status['online'] else 'No'}")
+        result.append(f"  - Power: {'On' if status['power'] else 'Off'}")
+        result.append(f"  - Uptime: {status['uptime']}")
+        result.append(f"  - Docker Running: {'Yes' if status['docker'] else 'No'}")
+        result.append(f"  - Minecraft Users: {'Yes' if status['minecraft_users'] else 'No'}")
+    return "\n".join(result)
 
 if __name__ == "__main__":
     # Argument parser setup
@@ -113,11 +125,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.command and args.target:
-        if args.command == "get_status":
-            print(f"Status for {args.target}: {get_status(args.target)}")
-        elif args.command == "get_power":
-            print(f"Power state for {args.target}: {get_power(args.target)}")
-        elif args.command.startswith("set_power"):
+        if args.command.startswith("set_power"):
             _, value = args.command.split("=")
             print(f"Setting power state for {args.target} to {value}: {set_power(args.target, value)}")
         else:
@@ -128,8 +136,8 @@ if __name__ == "__main__":
         for hp in HPs:
             data[hp] = get_status(hp)
         if args.verbose:
-            print_verbose_status(data)
-        else:
-            print(data)
+            data = prettify_status(data)
+            
+        print(data)
     else:
         print("Both --command and --target must be provided for specific operations.")
