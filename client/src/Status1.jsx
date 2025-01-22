@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 const defaultStatus = {
-  powered: null,
+  powered: "UNKNOWN",
 };
 
 export default function Status1(props) {
@@ -46,7 +46,7 @@ export default function Status1(props) {
         <b>{props.target}</b>
       </p>
       <ul>
-        <li>Powered: {status.powered == null ? "?" : status.powered}</li>
+        <li>Powered: {status.powered}</li>
       </ul>
     </div>
   );
