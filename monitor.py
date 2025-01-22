@@ -12,7 +12,7 @@ def get_status(target):
         "minecraft_users": None,
         "uptime": None,
         "uid": None,
-        # "exists": None
+        "exists": None
     }
 
     status["online"] = get_online(target)
@@ -23,6 +23,7 @@ def get_status(target):
 	
     status["power"] = True if status["online"] else get_power(target)
     status["uid"] = False if not status["power"] else get_UID(target)
+    status["exists"] = True if status["power"] else get_exists(target)
     
     return status
 
@@ -36,6 +37,7 @@ def prettify_status(data):
         result.append(f"  - Docker Running: {'Yes' if status['docker'] else 'No'}")
         result.append(f"  - Minecraft Users: {'Yes' if status['minecraft_users'] else 'No'}")
         result.append(f"  - UID: {'Yes' if status['uid'] else 'No'}")
+        result.append(f"  - Exists: {'Yes' if status['exists'] else 'No'}")
     return "\n".join(result)
 
 if __name__ == "__main__":
