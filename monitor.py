@@ -66,7 +66,8 @@ if __name__ == "__main__":
             print(f"Getting status for {args.target}:")
             data = get_status(args.target)
             if args.verbose:
-                data = prettify_status(data)
+                print(data)
+                data = prettify_status({args.target: data})
             print(data)
         elif args.command.startswith("get_power"):
             print(f"Getting power state for {args.target}:")
