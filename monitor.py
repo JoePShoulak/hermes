@@ -50,7 +50,7 @@ class Docker(Enum):
 
 def get_ups():
     try:
-        return execute_command(f"ups")
+        return execute_command("/home/joe/bin/ups")
     except:
         return "UNKNOWN"
 
