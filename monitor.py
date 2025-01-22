@@ -29,7 +29,7 @@ def parse_power(output):
 
 # # Online
 def get_online(target):
-    return execute_command("ping -C 1 hp1")
+    return execute_command(f"ping -C 1 {target}")
 
 HPs = ["hp1", "hp2", "hp3", "hp4"]
 
@@ -38,8 +38,9 @@ def get_status(target):
         "online": None
 	}
     
-    print(get_online(target))
-    
+    status["online"] = get_online(target) 
+
+    return status
 
 if __name__ == "__main__":
-	get_status("hp1")
+	print(get_status("hp1"))
