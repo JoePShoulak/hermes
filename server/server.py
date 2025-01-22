@@ -27,8 +27,8 @@ def host_status(host):
     return jsonify(status)
 
 @app.route('/api/host/<host>/<command>/<value>', methods=['PUT'])
-def host_status(host, command, value):
-    result = execute_command(f"ilo {host} {command.uppper()} {value.upper()}")
+def host_status_setter(host, command, value):
+    result = execute_command(f"ilo {host} {command.upper()} {value.upper()}")
     return result
 
 @app.route('/api/ups', methods=['GET'])
