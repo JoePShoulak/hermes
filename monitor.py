@@ -37,11 +37,10 @@ def set_power(target, value):
 # # Online
 def get_online(target):
 	try: 
-		raw = execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1|0) received\b"))
-		print(raw)
-		return raw == "1"
+		execute_command(f"ping -c 1 {target}")
+		return True
 	except:
-		return "UNKNOWN"
+		return False
 	
 # # Docker
 def get_docker(target):
