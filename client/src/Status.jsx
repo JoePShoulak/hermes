@@ -1,10 +1,27 @@
 import React, { useEffect, useState } from "react";
 
+const defaultState = {
+  status: [],
+  error: null,
+  lastUpdate: null,
+  elapsedTime: 0,
+};
+
 function Status() {
   const [statusData, setStatusData] = useState([]); // Store status data from API
   const [error, setError] = useState(null); // Store errors if API fails
   const [lastUpdate, setLastUpdate] = useState(null); // Track last update time
   const [elapsedTime, setElapsedTime] = useState(0); // Time elapsed since last update
+
+  const [systemState, setSytemState] = useState(defaultState);
+  function updateSytemState(key, value) {
+    setSytemState(prevState => ({
+      ...prevState,
+      [key]: value,
+    }));
+  }
+
+  // updateSystemState('elapsedTime', 100)
 
   // Fetch status data from the API
   const fetchData = async () => {
@@ -30,6 +47,14 @@ function Status() {
       setError(err.message);
     }
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Run fetchData on component mount
   useEffect(() => {
