@@ -56,6 +56,13 @@ def get_minecraft_users(target):
         return execute_command(f"ssh {target} sudo ~/bin/rcon_all list", lambda s: int(re_parse(s, r"\b(\d) of a max")) > 0)
     except:
         return "UNKNOWN"
+    
+# # Uptime
+def get_uptime(target):
+	try:
+		return execute_command(f"ssh {target} uptime -p", lambda s: re_parse(s, r"\bup (*)\b"))
+	except:
+		return "UNKNOWN"
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
@@ -65,18 +72,20 @@ def get_status(target):
         "power": None,
         "online": None,
         "docker": None,
-        "minecraft_users": None
+        "minecraft_users": None,
+        "uptime": None
     }
 
     status["online"] = get_online(target)
-    if status["online"]:
-        status["power"] = True
-    else:
+    if not status["online"]:
+        status["uptime"] = "OFFLINE"
         status["docker"] = False
         status["minecraft_users"] = False
         status["power"] = get_power(target)
         return status
     
+    status["power"] = True
+    status["uptime"] = get_uptime(target)
     status["docker"] = get_docker(target)
     if not status["docker"]:
         status["minecraft_users"] = False
