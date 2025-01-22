@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-export default Status1 = () => {
+export default function Status1(props) {
   const [status, setStatus] = useState({ powered: null });
 
   useEffect(() => {
@@ -31,9 +31,13 @@ export default Status1 = () => {
 
   return (
     <div>
-      <h1>
-        Power Status: {status.powered !== null ? status.powered : "Loading..."}
-      </h1>
+      <h1>{props.target}</h1>
+      <ul>
+        <li>
+          Power Status:{" "}
+          {status.powered !== null ? status.powered : "Loading..."}
+        </li>
+      </ul>
     </div>
   );
-};
+}
