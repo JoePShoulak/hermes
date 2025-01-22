@@ -28,7 +28,7 @@ def host_status(host):
 
 @app.route('/api/host/<host>/<command>/<value>', methods=['PUT'])
 def host_status(host, command, value):
-    result = execute_command(f"ilo {host} {command} {value}")
+    result = execute_command(f"ilo {host} {command.uppper()} {value.upper()}")
     return result
 
 @app.route('/api/ups', methods=['GET'])
