@@ -42,9 +42,9 @@ class Docker(Enum):
 
     def __str__(self):
         colors = {
-            2: "green",
-            1: "white",
-            0: "red",
+            2: "blue",
+            1: "green",
+            0: "white",
         }
         return color_text(self.name, colors[self.value])
 
@@ -96,7 +96,7 @@ def prettify_status(data):
     return "\n".join(result)
 
 if __name__ == "__main__":
-    print(get_ups())
+    print("UPS Status:", get_ups())
 
     # Argument parser setup
     parser = argparse.ArgumentParser(description="Monitor and manage servers.")
