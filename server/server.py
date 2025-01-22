@@ -1,6 +1,5 @@
 from commands import *
 from flask import Flask, request, jsonify
-import json
 
 app = Flask('Hermes')
 
@@ -19,12 +18,16 @@ def index():
     returns ups_status: str
 """
 
-@app.route('/api/status/<host>', methods=['GET', 'PUT'])
+@app.route('/api/host/<host>', methods=['GET', 'PUT'])
 def host_status(host):
     if request.method == 'PUT':
         return f'PUT host_status {host}'
     else:
-        return jsonify(get_status(host))
+        status = get_status(host)
+        status['state'] = status['state'].name
+        status['docker'] = status['docker'].name
+
+        return jsonify(status)
 
 @app.route('/api/ups', methods=['GET'])
 def ups_status():
