@@ -24,6 +24,7 @@ def host_status(host):
     if request.method == 'PUT':
         return f'PUT host_status {host}'
     else:
+        get_status(host)
         return f'host_status {host}'
 
 @app.route('/api/docker/<host>', methods=['GET'])
