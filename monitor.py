@@ -67,7 +67,9 @@ def get_status(target):
 	}
 
 	status["online"] = get_online(target)
-	if not status["online"]:
+	if status["online"]:
+		status["power"] = True
+	else:
 		status["docker"] = False
 		status["minecraft_users"] = False
 		status["power"] = get_power(target)
