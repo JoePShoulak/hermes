@@ -62,12 +62,12 @@ if __name__ == "__main__":
     
     if args.command and args.target:
         subcommand, value = args.command.split("=")
-        if args.command.startsWith("get_power"):
+        if args.command.startswith("get_power"):
             print(f"Getting power state for {args.target} to {value}: {get_power(args.target)}")
-        elif args.command.startsWith("set_power"):
+        elif args.command.startswith("set_power"):
             _, value = args.command.split("=")
             print(f"Setting power state for {args.target} to {value}: {set_power(args.target, value)}")
-        elif args.command.startsWith("set_UID"):
+        elif args.command.startswith("set_UID"):
             _, value = args.command.split("=")
             print(f"Setting UID state for {args.target} to {value}: {set_UID(args.target, value)}")
         else:
