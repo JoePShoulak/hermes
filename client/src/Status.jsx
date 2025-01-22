@@ -26,7 +26,7 @@ function Status() {
   // Fetch status data from the API
   const fetchData = async () => {
     try {
-      const response = await fetch("/api/status/all"); // Call the API
+      const response = await fetch("/api/power/all"); // Call the API
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -84,7 +84,7 @@ function Status() {
     );
 
     try {
-      const response = await fetch(`/api/status/hp/${hostId}`, {
+      const response = await fetch(`/api/power/hp/${hostId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ state }), // Pass the state (e.g., ON, OFF, RESET)
@@ -98,9 +98,7 @@ function Status() {
       console.log(`Power ${state} for ${hostId} successful:`, result);
 
       // Refetch status data after sending the request
-      const updatedData = await fetch("/api/status/all").then(res =>
-        res.json()
-      );
+      const updatedData = await fetch("/api/power/all").then(res => res.json());
 
       const normalizedData = updatedData.map(item => ({
         ...item,
