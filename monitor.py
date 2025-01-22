@@ -32,7 +32,7 @@ def get_status(target):
 
     status["online"] = get_online(target)
     status["power"] = True if status["online"]==True else get_power(target)
-    status["uid"] = False if status["power"]==False else get_UID(target)
+    status["uid"] = False if status["power"]==False else get_UID(target).replace("UNKNOWN", "-")
     status["exists"] = True if status["power"]==True else get_exists(target)
 
     status["uptime"] = "-" if status["online"]==False else get_uptime(target)
@@ -50,7 +50,7 @@ def prettify_status(data):
         result.append(f"  - Uptime: {color_text(status['uptime'], "red" if status["uptime"]=="-" else "white")}")
         result.append(f"  - Docker Running: {color_text('Yes', "blue") if status['docker']==True else 'No'}")
         result.append(f"  - Minecraft Users: {color_text('Yes', "blue") if status['minecraft_users']==True else 'No'}")
-        result.append(f"  - UID: {color_text('Yes', "blue") if status['uid']==True else status['uid']}")
+        result.append(f"  - UID: {color_text('Yes', "blue") if status['uid']==True else color_text(status['uid'], "red" if status['uid'] == "-" else "white")}")
         result.append(f"  - Exists: {'Yes' if status['exists']==True else color_text('No', "red")}")
     return "\n".join(result)
 
