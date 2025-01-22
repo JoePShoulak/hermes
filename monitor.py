@@ -1,29 +1,31 @@
 import subprocess
 import re
 
-def execute_command(command):
+class CommandExecutionError(Exception):
+    """Custom exception for command execution errors."""
+    def __init__(self, message, return_code):
+        super().__init__(message)
+        self.return_code = return_code
+
+def execute_command(command, parser=lambda output: output):
     try:
         result = subprocess.run(command, shell=True, text=True, capture_output=True, check=True)
-        output = result.stdout.strip()  # Clean up the command's output
-        return output  # Return the output for further processing
+        return parser(result.stdout.strip()) # Clean up the command's output
     except subprocess.CalledProcessError as e:
         error_message = e.stderr.strip() if e.stderr else "Unknown error"
-        return {"error": error_message, "return_code": e.returncode}  # Return error details
+        raise CommandExecutionError(error_message, e.returncode)
 
-def parse_power_state(output):
-    # Use a regex pattern to search for "On" or "Off"
+def parse_power(output):
     match = re.search(r"\b(On|Off)\b", output, re.IGNORECASE)
-    if match:
-        return match.group(1).capitalize()  # Ensure the result is capitalized
-    return "Unknown"
+    return match.group(1).capitalize() if match else "UNKNOWN"
 
+def get_power(target):
+    try: 
+      return execute_command(f"ilo {target} POWER", parse_power)
+    except CommandExecutionError as e:
+        print(f"Error: {e}")
+        print(f"Return code: {e.return_code}")
+        return "UNKNOWN"
+    
 if __name__ == "__main__":
-    bash_command = "ilo hp1 power"
-    response = execute_command(bash_command)
-
-    if isinstance(response, dict) and "error" in response:
-        print("Error:", response["error"])
-        print("Return code:", response["return_code"])
-    else:
-        power_state = parse_power_state(response)
-        print(f"Power state: {power_state}")
+    print("HP1:", get_power("hp1"))
