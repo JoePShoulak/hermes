@@ -10,7 +10,7 @@ class CommandExecutionError(Exception):
 def execute_command(command, parser=lambda output: output):
     try:
         result = subprocess.run(command, shell=True, text=True, capture_output=True, check=True)
-        return parser(result.stdout.strip()) # Clean up the command's output
+        return parser(result.stdout.strip())  # Clean up the command's output
     except subprocess.CalledProcessError as e:
         error_message = e.stderr.strip() if e.stderr else "Unknown error"
         raise CommandExecutionError(error_message, e.returncode)
@@ -30,18 +30,29 @@ def set_power(target, value):
     
 # # Online
 def get_online(target):
-    return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(0 rec|1 rec)\b"))
+    def parse_ping(output):
+        # Parse for ping success or failure and map to "On"/"Off"
+        if re.search(r"1 received", output, re.IGNORECASE):
+            return "On"  # Online
+        elif re.search(r"0 received", output, re.IGNORECASE):
+            return "Off"  # Offline
+        return "UNKNOWN"  # Unclear result
+    
+    try:
+        return execute_command(f"ping -c 1 {target}", parse_ping)
+    except CommandExecutionError:
+        return "Off"  # If ping fails entirely, assume "Off"
 
+# Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
 
 def get_status(target):
     status = {
-        "online": None
-	}
-    
-    status["online"] = get_online(target) 
-
+        "online": get_online(target),
+        # Add more status checks here if needed (e.g., power state)
+    }
     return status
 
 if __name__ == "__main__":
-	print(get_status("hp1"))
+    for hp in HPs:
+        print(f"Status for {hp}: {get_status(hp)}")
