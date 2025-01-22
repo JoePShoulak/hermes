@@ -16,7 +16,7 @@ export default function Status1(props) {
   const fetchData = async () => {
     console.log("fetching data");
     try {
-      const response = await fetch("/api/power/all"); // Call the API
+      const response = await fetch("/api/power/hp1"); // Call the API
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
