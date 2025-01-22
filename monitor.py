@@ -33,10 +33,8 @@ if __name__ == "__main__":
     for tgt in HPs:
         print(tgt.upper(), get_power(tgt))
           
-    print("Shutting off HP2...", set_power("hp2", "OFF"))
-    print("Shutting off HP3...", set_power("hp3", "OFF"))
-    print("Shutting off HP4...", set_power("hp4", "OFF"))
-    print("HP1:", get_power("hp1"))
-    print("HP2:", get_power("hp2"))
-    print("HP3:", get_power("hp3"))
-    print("HP4:", get_power("hp4"))
+    for tgt in HPs[1:]:
+        print("Shutting off", tgt.upper(), set_power(tgt, "OFF"))
+
+    for tgt in HPs:
+        print(tgt.upper(), get_power(tgt))
