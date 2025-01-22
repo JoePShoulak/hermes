@@ -1,38 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
+const defaultStatus = {
+  powered: "UNKNOWN",
+};
 
 export default function Status1(props) {
-  const [status, setStatus] = useState({ powered: null });
+  const [status, setStatus] = useState(defaultStatus);
+
+  function updateStatus(key, value) {
+    setStatus(prevState => ({
+      ...prevState,
+      [key]: value,
+    }));
+  }
 
   useEffect(() => {
     const fetchPowerStatus = async () => {
       try {
-        const result = await fetch(`/api/power/hp1`);
+        const result = await fetch(`/api/get-power-status`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: `ilo ${props.target} power` }),
+        });
 
         const data = await result.json();
-        setStatus(prevStatus => ({ ...prevStatus, powered: data.output }));
+        updateStatus("powered", data.output);
       } catch (error) {
         console.error("Error fetching power status:", error);
+        updateStatus("powered", "ERROR");
       }
     };
 
     // Fetch power status on component mount
     fetchPowerStatus();
 
-    // Set interval to fetch periodically (e.g., every 30 seconds)
+    // Periodically fetch power status every 30 seconds
     const interval = setInterval(fetchPowerStatus, 30000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, []);
+  }, [props.target]);
 
   return (
     <div>
-      <h1>{props.target}</h1>
+      <p>
+        <b>{props.target}</b>
+      </p>
       <ul>
-        <li>
-          Power Status:{" "}
-          {status.powered !== null ? status.powered : "Loading..."}
-        </li>
+        <li>Powered: {status.powered}</li>
       </ul>
     </div>
   );
