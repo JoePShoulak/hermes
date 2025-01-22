@@ -80,10 +80,10 @@ def prettify_status(data):
     result = []
     for host, status in data.items():
         result.append(f"\nHost: {host.upper()}")
-        result.append(f"  - State: {status["state"]}")
-        result.append(f"  - State: {status["docker"]}")
-        result.append(f"  - State: {status["uid"]}")
-        result.append(f"  - State: {status["uptime"]}")
+        result.append(f"  - State: {status["state"].name}")
+        result.append(f"  - Docker: {status["docker"].name}")
+        result.append(f"  - UID Light: {status["uid"]}")
+        result.append(f"  - Uptime: {status["uptime"]}")
     return "\n".join(result)
 
 if __name__ == "__main__":
