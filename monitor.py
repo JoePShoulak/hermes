@@ -30,18 +30,7 @@ def set_power(target, value):
     
 # # Online
 def get_online(target):
-    def parse_ping(output):
-        # Parse for ping success or failure and map to "On"/"Off"
-        if re.search(r"1 received", output, re.IGNORECASE):
-            return "On"  # Online
-        elif re.search(r"0 received", output, re.IGNORECASE):
-            return "Off"  # Offline
-        return "UNKNOWN"  # Unclear result
-    
-    try:
-        return execute_command(f"ping -c 1 {target}", parse_ping)
-    except CommandExecutionError:
-        return "Off"  # If ping fails entirely, assume "Off"
+	return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1 received|0 received)\b"))
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
