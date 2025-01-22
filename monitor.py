@@ -47,6 +47,13 @@ def get_docker(target):
 		return execute_command(f"ssh {target} sudo docker ps | wc -l")
 	except:
 		return "UNKNOWN"
+	
+# # Minecraft
+def get_minecraft_users(target):
+	try:
+		return execute_command(f"ssh {target} rcon_all list")
+	except:
+		return "UNKNOWN"
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
@@ -55,14 +62,19 @@ def get_status(target):
 	status = {
 		"power": None,
 		"online": None,
-		"docker": None
+		"docker": None,
+		"minecraft_users": None
 	}
 
 	status["online"] = get_online(target)
 	if status["online"]:
 		status["power"] = True
 		status["docker"] = get_docker(target)
+
+		if status["docker"]:
+			status["minecraft_users"] = get_minecraft_users(target)
 	else:
+		status["docker"] = False
 		status["power"] = get_power(target)
 
 	return status
