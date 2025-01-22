@@ -31,7 +31,7 @@ def get_power(target):
     
 def set_power(target, value):
     try: 
-        return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off)\b") == "On")
+        return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off|Reset)\b"))
     except:
         return "UNKNOWN"
     
