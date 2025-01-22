@@ -35,7 +35,9 @@ export default function Status1({ target }) {
     updateStatus("powered", getPower(target));
 
     // Periodically fetch power status every 30 seconds
-    const interval = setInterval(fetchPowerStatus, 30000);
+    const interval = setInterval(() => {
+      updateStatus("powered", getPower(target));
+    }, 30000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
