@@ -40,6 +40,13 @@ def get_online(target):
 		return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1 received|0 received)\b")) == "1 received"
 	except:
 		return False
+	
+# # Docker
+def get_docker(target):
+	try:
+		return execute_command(f"ssh {target} sudo docker ps | -wc -l")
+	except:
+		return "UNKNOWN"
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
