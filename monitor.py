@@ -23,10 +23,10 @@ def re_parse(output, query):
 
 # # POWER
 def get_power(target):
-    return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\b(On|Off)\b"))
+    return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\b(On|Off)\b")) == "On"
     
 def set_power(target, value):
-    return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off)\b"))
+    return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off)\b")) == "On"
     
 # # Online
 def get_online(target):
