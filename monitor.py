@@ -23,14 +23,23 @@ def re_parse(output, query):
 
 # # POWER
 def get_power(target):
-    return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\b(On|Off)\b")) == "On"
+	try: 
+		return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\b(On|Off)\b")) == "On"
+	except:
+		return "UNKNOWN"
     
 def set_power(target, value):
-    return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off)\b")) == "On"
+	try: 
+		return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off)\b")) == "On"
+	except:
+		return "UNKNOWN"
     
 # # Online
 def get_online(target):
-	return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1 received|0 received)\b")) == "1 received"
+	try: 
+		return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1 received|0 received)\b")) == "1 received"
+	except:
+		return "UNKNOWN"
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
