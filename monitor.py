@@ -37,7 +37,9 @@ def set_power(target, value):
 # # Online
 def get_online(target):
 	try: 
-		return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1|0) received\b") == "1")
+		raw = execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1|0) received\b"))
+		print(raw)
+		return raw == "1"
 	except:
 		return "UNKNOWN"
 	
