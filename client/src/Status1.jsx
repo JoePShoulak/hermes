@@ -1,53 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const defaultStatus = {
-  powered: "UNKNOWN",
-};
+export default Status1 = () => {
+  const [status, setStatus] = useState({ powered: null });
 
-export default function Status1(props) {
-  const [status, setStatus] = useState(defaultStatus);
-  function updateStatus(key, value) {
-    setStatus(prevState => ({
-      ...prevState,
-      [key]: value,
-    }));
-  }
+  useEffect(() => {
+    const fetchPowerStatus = async () => {
+      try {
+        const result = await fetch(`/api/get-power-status`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: "ilo hp1 power" }),
+        });
 
-  const fetchData = async () => {
-    console.log("fetching data");
-    try {
-      const response = await fetch("/api/power/hp1"); // Call the API
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await result.json();
+        setStatus(prevStatus => ({ ...prevStatus, powered: data.output }));
+      } catch (error) {
+        console.error("Error fetching power status:", error);
       }
-      const data = await response.json();
-      updateStatus("powered", data.status);
-    } catch (err) {
-      console.error("Error fetching status data:", err);
-    }
-  };
+    };
 
-  // Run fetchData on component mount
-  useEffect(() => {
-    fetchData();
-  }, []);
+    // Fetch power status on component mount
+    fetchPowerStatus();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchData();
-    }, 5000);
+    // Set interval to fetch periodically (e.g., every 30 seconds)
+    const interval = setInterval(fetchPowerStatus, 30000);
 
+    // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div>
-      <p>
-        <b>{props.target}</b>
-      </p>
-      <ul>
-        <li>Powered: {status.powered}</li>
-      </ul>
+      <h1>
+        Power Status: {status.powered !== null ? status.powered : "Loading..."}
+      </h1>
     </div>
   );
-}
+};
