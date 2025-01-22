@@ -28,7 +28,7 @@ def host_status(host):
 
 @app.route('/api/ups', methods=['GET'])
 def ups_status():
-    return get_ups()
+    return jsonify(get_ups())
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
