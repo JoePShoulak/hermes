@@ -5,7 +5,21 @@ const defaultStatus = {
   stale: false,
 };
 
-export default function Status1(props) {
+const getPower = target => {
+  const fetchPowerStatus = async () => {
+    try {
+      const result = await fetch(`/api/power/${target.toLowerCase()}`);
+
+      const data = await result.json();
+      return data.status;
+    } catch (error) {
+      console.error("Error fetching power status:", error);
+      return "ERROR";
+    }
+  };
+};
+
+export default function Status1({ target }) {
   const [status, setStatus] = useState(defaultStatus);
 
   function updateStatus(key, value) {
@@ -18,31 +32,20 @@ export default function Status1(props) {
   }
 
   useEffect(() => {
-    const fetchPowerStatus = async () => {
-      try {
-        const result = await fetch(`/api/power/${props.target.toLowerCase()}`);
-
-        const data = await result.json();
-        updateStatus("powered", data.status);
-      } catch (error) {
-        console.error("Error fetching power status:", error);
-        updateStatus("powered", "ERROR");
-      }
-    };
-
     // Fetch power status on component mount
-    fetchPowerStatus();
+
+    updateStatus("powered", getPower(target));
 
     // Periodically fetch power status every 30 seconds
     const interval = setInterval(fetchPowerStatus, 30000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [props.target]);
+  }, [target]);
 
   return (
     <div>
-      <h1>{props.target}</h1>
+      <h1>{target}</h1>
       <h2>Power</h2>
       <ul>
         <li>Powered: {status.powered || "UNKNOWN"}</li>
