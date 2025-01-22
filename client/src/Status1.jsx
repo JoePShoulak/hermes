@@ -9,7 +9,7 @@ export default function Status1(props) {
   const [status, setStatus] = useState(defaultStatus);
 
   function updateStatus(key, value) {
-    const update = value == "UNKNOWN" ? {stale: true} ? {[key]: value};
+    const update = (value == "UNKNOWN") ? ({stale: true}) ? ({[key]: value});
 
     setStatus({
       ...prevState,
