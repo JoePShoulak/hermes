@@ -65,13 +65,13 @@ def get_uptime(target):
 # # UID
 def get_UID(target):
     try:
-        return execute_command(f"ilo {target} UID", lambda s: re_parse(s, r"\b(On|Off)\b")=="On")
+        return execute_command(f"ilo {target} UID", lambda s: re_parse(s, r"\bcurrently: (On|Off)\b")=="On")
     except:
         return "UNKNOWN"
 
 def set_UID(target, value):
     try:
-        return execute_command(f"ilo {target} UID {value}", lambda s: re_parse(s, r"\b(On|Off)\b")=="On")
+        return execute_command(f"ilo {target} UID {value}", lambda s: re_parse(s, r"\bcurrently (On|Off)\b")=="On")
     except:
         return "UNKNOWN"
     
