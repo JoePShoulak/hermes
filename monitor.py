@@ -42,13 +42,13 @@ def prettify_status(data):
     result = []
     for host, status in data.items():
         result.append(f"\nHost: {host}")
-        result.append(color_text(f"  - Online: {'Yes' if status['online'] else 'No'}", 'green' if status['online'] else 'red' ))
-        result.append(f"  - Power: {'On' if status['power'] else 'Off'}")
+        result.append(f"  - Online: {color_text('Yes', "green") if status['online'] else color_text('No', "red")}")
+        result.append(f"  - Power: {color_text('On', "green") if status['power'] else color_text('Off', "red")}")
         result.append(f"  - Uptime: {status['uptime']}")
-        result.append(f"  - Docker Running: {'Yes' if status['docker'] else 'No'}")
-        result.append(f"  - Minecraft Users: {'Yes' if status['minecraft_users'] else 'No'}")
-        result.append(f"  - UID: {'Yes' if status['uid'] else 'No'}")
-        result.append(f"  - Exists: {'Yes' if status['exists'] else 'No'}")
+        result.append(f"  - Docker Running: {color_text('Yes', "blue") if status['docker'] else 'No'}")
+        result.append(f"  - Minecraft Users: {color_text('Yes', "blue") if status['minecraft_users'] else 'No'}")
+        result.append(f"  - UID: {color_text('Yes', "blue") if status['uid'] else 'No'}")
+        result.append(f"  - Exists: {'Yes' if status['exists'] else color_text('No', "red")}")
     return "\n".join(result)
 
 if __name__ == "__main__":
