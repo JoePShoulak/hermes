@@ -23,7 +23,7 @@ def re_parse(output, query):
 # # POWER
 def get_power(target):
     try: 
-        return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\b(On|Off)\b") == "On")
+        return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\bcurrently: (On|Off)\b") == "On")
     except:
         return "UNKNOWN"
     
