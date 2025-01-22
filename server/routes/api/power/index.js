@@ -1,5 +1,7 @@
 const router = require("express").Router();
 
+const ILO_TIMEOUT = 60000;
+
 // @route   GET api/power
 router.get("/all", async (req, res) => {
   // IPs here are the OS IPs where you can SSH for docker info.
