@@ -29,13 +29,13 @@ def get_status(target):
     }
 
     status["online"] = get_online(target)
-    status["power"] = True if status["online"] else get_power(target)
-    status["uid"] = False if not status["power"] else get_UID(target)
-    status["exists"] = True if status["power"] else get_exists(target)
+    status["power"] = True if status["online"]==True else get_power(target)
+    status["uid"] = False if status["power"]==False else get_UID(target)
+    status["exists"] = True if status["power"]==True else get_exists(target)
 
-    status["uptime"] = "OFFLINE" if not status["online"] else get_uptime(target)
-    status["docker"] = False if not status["online"] else get_docker(target)
-    status["minecraft_users"] = False if not status["docker"] else get_minecraft_users(target)
+    status["uptime"] = "OFFLINE" if status["online"]==False else get_uptime(target)
+    status["docker"] = False if status["online"]==False else get_docker(target)
+    status["minecraft_users"] = False if status["docker"]==False else get_minecraft_users(target)
     
     return status
 
