@@ -50,7 +50,7 @@ class Docker(Enum):
 
 def get_ups():
     try:
-        return "UPS: " + execute_command("upsc myups@localhost | grep ups.status").split(": ")[1:]
+        return execute_command("upsc myups@localhost | grep ups.status").split(": ")[1:]
     except:
         return "UNKNOWN"
 
