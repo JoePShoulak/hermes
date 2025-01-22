@@ -47,7 +47,7 @@ def prettify_status(data):
         result.append(f"  - Uptime: {status['uptime']}")
         result.append(f"  - Docker Running: {color_text('Yes', "blue") if status['docker'] else 'No'}")
         result.append(f"  - Minecraft Users: {color_text('Yes', "blue") if status['minecraft_users'] else 'No'}")
-        result.append(f"  - UID: {color_text('Yes', "blue") if status['uid'] else 'No'}")
+        result.append(f"  - UID: {color_text('Yes', "blue") if status['uid']==True else status['uid']}")
         result.append(f"  - Exists: {'Yes' if status['exists'] else color_text('No', "red")}")
     return "\n".join(result)
 
