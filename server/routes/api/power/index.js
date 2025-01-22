@@ -1,6 +1,8 @@
 const router = require("express").Router();
 
 const ILO_TIMEOUT = 60000;
+const { exec, execSync } = require("child_process"); // <–– Add execSync
+const ping = require("ping");
 
 // @route   GET api/power
 router.get("/all", async (req, res) => {
