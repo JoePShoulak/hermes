@@ -5,18 +5,16 @@ const defaultStatus = {
   stale: false,
 };
 
-const getPower = target => {
-  const fetchPowerStatus = async () => {
-    try {
-      const result = await fetch(`/api/power/${target.toLowerCase()}`);
+const getPower = async target => {
+  try {
+    const result = await fetch(`/api/power/${target.toLowerCase()}`);
 
-      const data = await result.json();
-      return data.status;
-    } catch (error) {
-      console.error("Error fetching power status:", error);
-      return "ERROR";
-    }
-  };
+    const data = await result.json();
+    return data.status;
+  } catch (error) {
+    console.error("Error fetching power status:", error);
+    return "ERROR";
+  }
 };
 
 export default function Status1({ target }) {
