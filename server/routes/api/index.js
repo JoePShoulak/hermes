@@ -97,9 +97,8 @@ router.get("/power/all", async (req, res) => {
 });
 
 // GET single host iLO status
-router.get("/power/HP/:id", (req, res) => {
-  const host = `hp${req.params.id}`;
-  const command = `ilo ${host} POWER`; // iLO command
+router.get("/power/:id", (req, res) => {
+  const command = `ilo ${req.params.id} POWER`; // iLO command
 
   exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
     if (error || stderr) {
