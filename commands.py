@@ -76,3 +76,11 @@ def set_UID(target, value):
         return execute_command(f"ilo {target} UID {value}", lambda s: re_parse(s, r"\b(On|Off)\b")=="On")
     except:
         return "UNKNOWN"
+    
+# Exists
+def get_exists(target):
+    try:
+        execute_command(f"ping -c 1 {target}")
+        return True
+    except:
+        return False
