@@ -12,7 +12,7 @@ export default function Status1(props) {
     const update = value == "UNKNOWN" ? { stale: true } : { [key]: value };
 
     setStatus({
-      ...prevState,
+      ...status,
       ...update,
     });
   }
