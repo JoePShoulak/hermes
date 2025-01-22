@@ -63,17 +63,25 @@ if __name__ == "__main__":
     
     if args.command and args.target:
         if args.command.startswith("get_status"):
-            print(f"Getting status for {args.target}: {get_status(args.target)}")
+            print(f"Getting status for {args.target}:")
+            data = get_status(args.target)
+            if args.verbose:
+                data = prettify_status(data)
+            print(data)
         elif args.command.startswith("get_power"):
-            print(f"Getting power state for {args.target}: {get_power(args.target)}")
+            print(f"Getting power state for {args.target}:")
+            print(get_power(args.target))
         elif args.command.startswith("set_power"):
             _, value = args.command.split("=")
-            print(f"Setting power state for {args.target} to {value}: {set_power(args.target, value)}")
+            print(f"Setting power state for {args.target} to {value}:")
+            print(set_power(args.target, value))
         elif args.command.startswith("get_uid"):
-            print(f"Getting uid state for {args.target}: {get_UID(args.target)}")
+            print(f"Getting uid state for {args.target}:")
+            print(get_UID(args.target))
         elif args.command.startswith("set_uid"):
             _, value = args.command.split("=")
-            print(f"Setting UID state for {args.target} to {value}: {set_UID(args.target, value)}")
+            print(f"Setting UID state for {args.target} to {value}:")
+            print(set_UID(args.target, value))
         else:
             print(f"Unknown command: {args.command}")
     elif not args.command and not args.target:
