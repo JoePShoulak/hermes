@@ -31,6 +31,6 @@ if __name__ == "__main__":
     print("HP1:", get_power("hp1"))
     print("HP2:", get_power("hp2"))
     print("Shutting off HP2...")
-    set_power("HP2", "OFF")
+    set_power("hp2", "OFF")
     print("HP1:", get_power("hp1"))
     print("HP2:", get_power("hp2"))
