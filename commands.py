@@ -27,7 +27,7 @@ def re_parse(output, query):
     return match.group(1).capitalize() if match else "UNKNOWN"
 # # UPS
 def get_ups():
-    return nothrow_execute_command("upspc myups@localhost", lambda s: re_parse(s, r"\bups.status: (*)\b"))
+    return nothrow_execute_command("upspc myups@localhost", lambda s: re_parse(s, r"*"))
     # ups.status: (OL LB ETC OMFG FOO BAR)
     
     # try:
