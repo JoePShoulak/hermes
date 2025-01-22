@@ -17,23 +17,19 @@ def execute_command(command, parser=lambda output: output):
 def nothrow_execute_command(command, parser=lambda output: output, default="UNKNOWN"):
     try:
         return execute_command(command, parser)
-    except CommandExecutionError:
+    except CommandExecutionError as e:
+        print(e)
         return default
 
 # GETTERS / SETTERS / PARSERS
 # # GENERAL
 def re_parse(output, query):
     match = re.search(query, output, re.IGNORECASE)
-    return match.group(1).capitalize() if match else "UNKNOWN"
+    return match.group(1).capitalize() if match else "UNK"
+
 # # UPS
 def get_ups():
-    return nothrow_execute_command("upspc myups@localhost", lambda s: re_parse(s, r"(?<=ups.status: ).*"))
-    # ups.status: (OL LB ETC OMFG FOO BAR)
-    
-    # try:
-    #     return execute_command("upsc myups@localhost | grep ups.status").split(": ")[1]
-    # except:
-    #     return "UNKNOWN"
+    return nothrow_execute_command("upspc myups@localhost | grep ups.status", lambda s: re_parse(s, r"ups.status: (.*)"))
 
 # # POWER
 def get_power(target):
