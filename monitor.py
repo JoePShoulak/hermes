@@ -44,7 +44,7 @@ def get_online(target):
 # # Docker
 def get_docker(target):
 	try:
-		return execute_command(f"ssh {target} sudo docker ps | -wc -l")
+		return execute_command(f"ssh {target} sudo docker ps | wc -l")
 	except:
 		return "UNKNOWN"
 
