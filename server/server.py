@@ -1,7 +1,15 @@
 from commands import *
 from flask import Flask, jsonify
+import json
 
 app = Flask('Hermes')
+
+def get_data():
+    try:
+        with open('data.json', 'r') as fp:
+            return json.load(fp)
+    except:
+        return {}
 
 @app.route('/')
 def index():
@@ -9,11 +17,7 @@ def index():
 
 @app.route('/api/host/<host>', methods=['GET'])
 def host_status(host):
-    status = get_status(host)
-    status['state'] = status['state'].name
-    status['docker'] = status['docker'].name
-
-    return jsonify(status)
+    return jsonify(get_data().get(host))
 
 @app.route('/api/host/<host>/<command>/<value>', methods=['PUT'])
 def host_status_setter(host, command, value):
@@ -24,7 +28,7 @@ def host_status_setter(host, command, value):
 
 @app.route('/api/ups', methods=['GET'])
 def ups_status():
-    return jsonify(get_ups())
+    return jsonify(get_data().get('ups'))
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
