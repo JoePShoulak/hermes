@@ -1,5 +1,6 @@
 import argparse
 from commands import *
+from enum import Enum
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
@@ -18,6 +19,11 @@ def color_text(text, color):
             code = 0
 
     return f"\033[{code}m{text}\033[0m"
+    
+# class State(Enum):
+#     ONLINE = 3
+#     BOOT = 2
+
 
 def get_status(target):
     status = {
@@ -27,17 +33,43 @@ def get_status(target):
         "minecraft_users": None,
         "uptime": None,
         "uid": None,
-        "exists": None
+        "exists": None,
+
+        "state": None
     }
 
-    status["online"] = get_online(target)
-    status["power"] = True if status["online"]==True else get_power(target)
-    status["uid"] = False if status["power"]==False else f"{get_UID(target)}".replace("UNKNOWN", "-")
-    status["exists"] = True if status["online"]==True else get_exists(target)
+    STATE = {
+        "online": 3,
+        "boot": 2,
+        "powered": 1,
+        "unpowered": 0,
+    }
 
-    status["uptime"] = "-" if status["online"]==False else get_uptime(target)
-    status["docker"] = False if status["online"]==False else get_docker(target)
-    status["minecraft_users"] = False if status["docker"]==False else get_minecraft_users(target)
+    DOCKER = {
+        "in_use": 2,
+        "online": 1,
+        "offline": 0
+    }
+
+    if get_online(target):
+        status["state"] = STATE["online"]
+    elif get_power(target):
+        status["state"] = STATE["boot"]
+    elif get_exists(target):
+        status["state"] = STATE["powered"]
+    else:
+        status["state"] = STATE["unpowered"]
+
+    if status["state"] == STATE["online"] and get_docker(target):
+        if get_minecraft_users(target):
+            status["docker"] = DOCKER["in_use"]
+        else:
+            status["docker"] = DOCKER["online"]
+    else:
+        status["docker"] = DOCKER["offline"]
+
+    status["uid"] = False if status["state"]==STATE["unpowered"] else f"{get_UID(target)}".replace("UNKNOWN", "-")
+    status["uptime"] = "-" if status["state"]==STATE["online"] else get_uptime(target)
     
     return status
 
@@ -45,13 +77,11 @@ def prettify_status(data):
     result = []
     for host, status in data.items():
         result.append(f"\nHost: {host.upper()}")
-        result.append(f"  - Online: {color_text('Yes', "green") if status['online']==True else color_text('No', "red")}")
-        result.append(f"  - Power: {color_text('On', "green") if status['power']==True else color_text('Off', "red")}")
-        result.append(f"  - Uptime: {color_text(status['uptime'], "red" if status["uptime"]=="-" else "white")}")
-        result.append(f"  - Docker Running: {color_text('Yes', "blue") if status['docker']==True else 'No'}")
-        result.append(f"  - Minecraft Users: {color_text('Yes', "blue") if status['minecraft_users']==True else 'No'}")
-        result.append(f"  - UID: {color_text('Yes', "blue") if status['uid']==True else color_text(status['uid'], "red" if status['uid'] == "-" else "white")}")
         result.append(f"  - Exists: {'Yes' if status['exists']==True else color_text('No', "red")}")
+        result.append(f"  - State: {status["state"]}")
+        result.append(f"  - State: {status["docker"]}")
+        result.append(f"  - State: {status["uid"]}")
+        result.append(f"  - State: {status["uptime"]}")
     return "\n".join(result)
 
 if __name__ == "__main__":
