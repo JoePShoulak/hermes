@@ -21,7 +21,6 @@ export default function Status1(props) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log(data);
       updateStatus("powered", data);
     } catch (err) {
       console.error("Error fetching status data:", err);
