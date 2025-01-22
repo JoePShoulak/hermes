@@ -56,22 +56,6 @@ function Status() {
     return () => clearInterval(interval);
   }, []);
 
-  // Run fetchData on component mount
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // Timer to update elapsed time
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (lastUpdate) {
-        setElapsedTime(Math.floor((Date.now() - lastUpdate) / 1000));
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [lastUpdate]);
-
   // Function to send status state requests (ON/OFF/RESET)
   const handlePowerState = async (hostId, state) => {
     // Instantly update the local state to show UNKNOWN for the clicked host
@@ -114,24 +98,10 @@ function Status() {
     }
   };
 
-  // Format elapsed time into hh:mm:ss
-  const formatElapsedTime = seconds => {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
-    const s = String(seconds % 60).padStart(2, "0");
-    return `${h}:${m}:${s}`;
-  };
-
   return (
     <div>
       <h1>Status</h1>
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
-      <p>
-        Last update:{" "}
-        {lastUpdate
-          ? `${formatElapsedTime(elapsedTime)} ago`
-          : "No updates yet"}
-      </p>
 
       <div>
         {statusData.length > 0 ? (
