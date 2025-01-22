@@ -60,7 +60,7 @@ def get_minecraft_users(target):
 # # Uptime
 def get_uptime(target):
 	try:
-		return execute_command(f"ssh {target} uptime -p", lambda s: re_parse(s, r"\bup (*)\b"))
+		return execute_command(f"ssh {target} uptime -p")
 	except:
 		return "UNKNOWN"
 
