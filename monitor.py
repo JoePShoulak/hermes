@@ -41,7 +41,7 @@ def get_status(target):
 def prettify_status(data):
     result = []
     for host, status in data.items():
-        result.append(f"\nHost: {host.toUpperCase()}")
+        result.append(f"\nHost: {host.upper()}")
         result.append(f"  - Online: {color_text('Yes', "green") if status['online'] else color_text('No', "red")}")
         result.append(f"  - Power: {color_text('On', "green") if status['power'] else color_text('Off', "red")}")
         result.append(f"  - Uptime: {status['uptime']}")
