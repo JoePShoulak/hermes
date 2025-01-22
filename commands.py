@@ -11,6 +11,9 @@ def execute_command(command, parser=lambda output: output, default="UNKNOWN"):
         result = subprocess.run(command, shell=True, text=True, capture_output=True, check=True)
         return parser(result.stdout.strip())  # Clean up the command's output
     except subprocess.CalledProcessError as e:
+        if not default:
+            raise CommandExecutionError(e, 0)
+
         return default
     
 # GETTERS / SETTERS / PARSERS
@@ -25,63 +28,42 @@ def get_ups():
 
 # # POWER
 def get_power(target):
-    try: 
         return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\bcurrently: (On|Off)\b") == "On")
-    except:
-        return "UNKNOWN"
     
 def set_power(target, value):
-    try: 
         return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off|Reset)\b"))
-    except:
-        return "UNKNOWN"
     
 # # Online
 def get_online(target):
-    try: 
-        execute_command(f"ping -c 1 {target}")
+    try:
+        execute_command(f"ping -c 1 {target}", default=False)
         return True
     except:
         return False
 	
 # # Docker
 def get_docker(target):
-    try:
         return execute_command(f"ssh {target} sudo docker ps | grep Up | wc -l", lambda s: int(s) > 0)
-    except:
-        return "UNKNOWN"
 	
 # # Minecraft
 def get_minecraft_users(target):
-    try:
         return execute_command(f"ssh {target} sudo ~/bin/rcon_all list", lambda s: int(re_parse(s, r"\b(\d) of a max")) > 0)
-    except:
-        return "UNKNOWN"
     
 # # Uptime
 def get_uptime(target):
-    try:
         return execute_command(f"ssh {target} uptime -p").split("up ")[-1]
-    except:
-        return "UNKNOWN"
     
 # # UID
 def get_UID(target):
-    try:
         return execute_command(f"ilo {target} UID", lambda s: re_parse(s, r"\bcurrently: (On|Off)\b"))=="On"
-    except:
-        return "UNKNOWN"
 
 def set_UID(target, value):
-    try:
         return execute_command(f"ilo {target} UID {value}", lambda s: re_parse(s, r"\bcurrently (On|Off)\b")=="On")
-    except:
-        return "UNKNOWN"
     
 # Exists
 def get_exists(target):
     try:
-        execute_command(f"ping -c 1 {target}.ilo")
+        execute_command(f"ping -c 1 {target}.ilo", default=False)
         return True
     except:
         return False
