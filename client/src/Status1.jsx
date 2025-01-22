@@ -2,16 +2,20 @@ import React, { useEffect, useState } from "react";
 
 const defaultStatus = {
   powered: "UNKNOWN",
+  stale: false,
 };
 
 export default function Status1(props) {
   const [status, setStatus] = useState(defaultStatus);
 
   function updateStatus(key, value) {
-    setStatus(prevState => ({
+    const update = value == "UNKNOWN" ? {stale: true} ? {[key]: value};
+
+    setStatus({
       ...prevState,
-      [key]: value,
-    }));
+      ...update
+    });
+    }
   }
 
   useEffect(() => {
