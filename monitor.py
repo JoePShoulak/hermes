@@ -20,22 +20,23 @@ def color_text(text, color):
 
     return f"\033[{code}m{text}\033[0m"
     
-# class State(Enum):
-#     ONLINE = 3
-#     BOOT = 2
+class State(Enum):
+    ONLINE = 3
+    BOOT = 2
+    POWERED = 1
+    UNPOWERED = 0
+
+class Docker(Enum):
+    IN_USE = 
 
 
 def get_status(target):
     status = {
-        "power": None,
-        "online": None,
-        "docker": None,
-        "minecraft_users": None,
         "uptime": None,
         "uid": None,
-        "exists": None,
 
-        "state": None
+        "state": None,
+        "docker": None,
     }
 
     STATE = {
