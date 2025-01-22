@@ -18,16 +18,18 @@ def index():
     returns ups_status: str
 """
 
-@app.route('/api/host/<host>', methods=['GET', 'PUT'])
+@app.route('/api/host/<host>', methods=['GET'])
 def host_status(host):
-    if request.method == 'PUT':
-        return f'PUT host_status {host}'
-    else:
-        status = get_status(host)
-        status['state'] = status['state'].name
-        status['docker'] = status['docker'].name
+    status = get_status(host)
+    status['state'] = status['state'].name
+    status['docker'] = status['docker'].name
 
-        return jsonify(status)
+    return jsonify(status)
+
+@app.route('/api/host/<host>/<command>/<value>', methods=['PUT'])
+def host_status(host, command, value):
+    result = execute_command(f"ilo {host} {command} {value}")
+    return result
 
 @app.route('/api/ups', methods=['GET'])
 def ups_status():
