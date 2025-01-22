@@ -67,16 +67,18 @@ def get_status(target):
 	}
 
 	status["online"] = get_online(target)
-	if status["online"]:
-		status["power"] = True
-		status["docker"] = get_docker(target)
-
-		if status["docker"]:
-			status["minecraft_users"] = get_minecraft_users(target)
-	else:
+	if not status["online"]:
 		status["docker"] = False
+		status["minecraft_users"] = False
 		status["power"] = get_power(target)
-
+		return status
+	
+	status["docker"] = get_docker(target)
+	if not status["docker"]:
+		status["minecraft_users"] = False
+		return status
+	
+	status["minecraft_users"] = get_minecraft_users(target)
 	return status
 
 if __name__ == "__main__":
