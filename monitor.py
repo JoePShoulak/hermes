@@ -15,17 +15,17 @@ def execute_command(command, parser=lambda output: output):
         error_message = e.stderr.strip() if e.stderr else "Unknown error"
         raise CommandExecutionError(error_message, e.returncode)
 
+# GETTERS / SETTERS / PARSERS
+# # POWER
+def get_power(target):
+    return execute_command(f"ilo {target} POWER", parse_power)
+    
+def set_power(target, value):
+    return execute_command(f"ilo {target} POWER {value}", parse_power)
+    
 def parse_power(output):
     match = re.search(r"\b(On|Off)\b", output, re.IGNORECASE)
     return match.group(1).capitalize() if match else "UNKNOWN"
 
-def get_power(target):
-    try: 
-      return execute_command(f"ilo {target} POWER", parse_power)
-    except CommandExecutionError as e:
-        print(f"Error: {e}")
-        print(f"Return code: {e.return_code}")
-        return "UNKNOWN"
-    
 if __name__ == "__main__":
     print("HP1:", get_power("hp1"))
