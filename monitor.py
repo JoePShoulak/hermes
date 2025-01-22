@@ -51,7 +51,7 @@ def get_docker(target):
 # # Minecraft
 def get_minecraft_users(target):
 	try:
-		return execute_command(f"ssh {target} rcon_all list")
+		return execute_command(f"ssh {target} sudo ~/bin/rcon_all list")
 	except:
 		return "UNKNOWN"
 
