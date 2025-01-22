@@ -97,5 +97,7 @@ def get_status(target):
 
     status["uid"] = False if status["state"]==State.UNPOWERED else f"{get_UID(target)}".replace("UNKNOWN", "-")
     status["uptime"] = "-" if status["state"]!=State.ONLINE else get_uptime(target)
-    
+    status['state'] = status['state'].name
+    status['docker'] = status['docker'].name
+
     return status
