@@ -48,12 +48,6 @@ class Docker(Enum):
         }
         return color_text(self.name, colors[self.value])
 
-def get_ups():
-    try:
-        return execute_command("upsc myups@localhost | grep ups.status").split(": ")[1]
-    except:
-        return "UNKNOWN"
-
 
 def get_status(target):
     status = {

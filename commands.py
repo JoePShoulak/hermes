@@ -13,12 +13,27 @@ def execute_command(command, parser=lambda output: output):
     except subprocess.CalledProcessError as e:
         error_message = e.stderr.strip() if e.stderr else "Unknown error"
         raise CommandExecutionError(error_message, e.returncode)
+    
+def nothrow_execute_command(command, parser=lambda output: output, default="UNKNOWN"):
+    try:
+        return execute_command(command, parser)
+    except CommandExecutionError:
+        return default
 
 # GETTERS / SETTERS / PARSERS
 # # GENERAL
 def re_parse(output, query):
     match = re.search(query, output, re.IGNORECASE)
     return match.group(1).capitalize() if match else "UNKNOWN"
+# # UPS
+def get_ups():
+    nothrow_execute_command("upspc myups@localhost", lambda s: re_parse(s, r"ups.status: (*)"))
+    # ups.status: (OL LB ETC OMFG FOO BAR)
+    
+    # try:
+    #     return execute_command("upsc myups@localhost | grep ups.status").split(": ")[1]
+    # except:
+    #     return "UNKNOWN"
 
 # # POWER
 def get_power(target):
