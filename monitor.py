@@ -4,6 +4,19 @@ from commands import *
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
 
+def color_text(text, color):
+    match color:
+        case "red":
+            code = 31
+        case "green":
+            code = 32
+        case "blue":
+            code = 34
+        case _:
+            code = 0
+
+    return f"\033[{code}m{text}\033[0m]]"
+
 def get_status(target):
     status = {
         "power": None,
@@ -17,10 +30,8 @@ def get_status(target):
 
     status["online"] = get_online(target)
     status["uptime"] = "OFFLINE" if not status["online"] else get_uptime(target)
-
     status["docker"] = False if not status["online"] else get_docker(target)
     status["minecraft_users"] = False if not status["docker"] else get_minecraft_users(target)
-	
     status["power"] = True if status["online"] else get_power(target)
     status["uid"] = False if not status["power"] else get_UID(target)
     status["exists"] = True if status["power"] else get_exists(target)
@@ -31,7 +42,7 @@ def prettify_status(data):
     result = []
     for host, status in data.items():
         result.append(f"\nHost: {host}")
-        result.append(f"  - Online: {'Yes' if status['online'] else 'No'}")
+        result.append(color_text(f"  - Online: {'Yes' if status['online'] else 'No'}", 'green' if status['online'] else 'red' ))
         result.append(f"  - Power: {'On' if status['power'] else 'Off'}")
         result.append(f"  - Uptime: {status['uptime']}")
         result.append(f"  - Docker Running: {'Yes' if status['docker'] else 'No'}")
@@ -50,11 +61,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.command and args.target:
-        if args.command.startswith("set_power"):
-            _, value = args.command.split("=")
+        subcommand, value = args.command.split("=")
+        if subcommand == "set_power":
             print(f"Setting power state for {args.target} to {value}: {set_power(args.target, value)}")
-        if args.command.startswith("set_uid"):
-            _, value = args.command.split("=")
+        elif subcommand == "set_uid":
             print(f"Setting UID state for {args.target} to {value}: {set_UID(args.target, value)}")
         else:
             print(f"Unknown command: {args.command}")
