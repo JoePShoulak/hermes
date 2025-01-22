@@ -34,7 +34,7 @@ def get_status(target):
     status["uid"] = False if status["power"]==False else get_UID(target)
     status["exists"] = True if status["power"]==True else get_exists(target)
 
-    status["uptime"] = "OFFLINE" if status["online"]==False else get_uptime(target)
+    status["uptime"] = "-" if status["online"]==False else get_uptime(target)
     status["docker"] = False if status["online"]==False else get_docker(target)
     status["minecraft_users"] = False if status["docker"]==False else get_minecraft_users(target)
     
@@ -44,11 +44,11 @@ def prettify_status(data):
     result = []
     for host, status in data.items():
         result.append(f"\nHost: {host.upper()}")
-        result.append(f"  - Online: {color_text('Yes', "green") if status['online'] else color_text('No', "red")}")
-        result.append(f"  - Power: {color_text('On', "green") if status['power'] else color_text('Off', "red")}")
-        result.append(f"  - Uptime: {status['uptime']}")
-        result.append(f"  - Docker Running: {color_text('Yes', "blue") if status['docker'] else 'No'}")
-        result.append(f"  - Minecraft Users: {color_text('Yes', "blue") if status['minecraft_users'] else 'No'}")
+        result.append(f"  - Online: {color_text('Yes', "green") if status['online']==True else color_text('No', "red")}")
+        result.append(f"  - Power: {color_text('On', "green") if status['power']==True else color_text('Off', "red")}")
+        result.append(f"  - Uptime: {color_text(status['uptime'], "red" is status["online"]==False)}")
+        result.append(f"  - Docker Running: {color_text('Yes', "blue") if status['docker']==True else 'No'}")
+        result.append(f"  - Minecraft Users: {color_text('Yes', "blue") if status['minecraft_users']==True else 'No'}")
         result.append(f"  - UID: {color_text('Yes', "blue") if status['uid']==True else status['uid']}")
         result.append(f"  - Exists: {'Yes' if status['exists']==True else color_text('No', "red")}")
     return "\n".join(result)
