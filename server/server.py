@@ -1,5 +1,5 @@
 from commands import *
-from flask import Flask
+from flask import Flask, request
 import json
 
 app = Flask('Hermes')
@@ -21,7 +21,10 @@ def index():
 
 @app.route('/api/status/<host>', methods=['GET', 'PUT'])
 def host_status(host):
-    return f'host_status {host}'
+    if request.method == 'PUT':
+        return f'PUT host_status {host}'
+    else:
+        return f'host_status {host}'
 
 @app.route('/api/docker/<host>', methods=['GET'])
 def docker_status(host):
