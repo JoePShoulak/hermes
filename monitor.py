@@ -114,7 +114,9 @@ if __name__ == "__main__":
             print(f"Unknown command: {args.command}")
     elif not args.command and not args.target:
         print("No command or target provided. Monitoring all hosts:")
+        data = {}
         for hp in HPs:
-            print(f"Status for {hp}: {get_status(hp)}")
+            data[hp] = get_status(hp)
+        print(data)
     else:
         print("Both --command and --target must be provided for specific operations.")
