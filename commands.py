@@ -2,7 +2,6 @@ import re
 import subprocess
 
 class CommandExecutionError(Exception):
-    """Custom exception for command execution errors."""
     def __init__(self, message, return_code):
         super().__init__(message)
         self.return_code = return_code
@@ -14,7 +13,6 @@ def execute_command(command, parser=lambda output: output):
     except subprocess.CalledProcessError as e:
         error_message = e.stderr.strip() if e.stderr else "Unknown error"
         raise CommandExecutionError(error_message, e.returncode)
-
 
 # GETTERS / SETTERS / PARSERS
 # # GENERAL
