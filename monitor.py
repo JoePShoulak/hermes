@@ -59,10 +59,10 @@ def get_minecraft_users(target):
     
 # # Uptime
 def get_uptime(target):
-	try:
-		return execute_command(f"ssh {target} uptime -p").split("up ")[-1]
-	except:
-		return "UNKNOWN"
+    try:
+        return execute_command(f"ssh {target} uptime -p").split("up ")[-1]
+    except:
+        return "UNKNOWN"
 
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
@@ -94,12 +94,22 @@ def get_status(target):
     status["minecraft_users"] = get_minecraft_users(target)
     return status
 
+def print_verbose_status(data):
+    for host, details in data.items():
+        print(f"\nHost: {host}")
+        print(f"  - Online: {'Yes' if details['online'] else 'No'}")
+        print(f"  - Power: {'On' if details['power'] else 'Off'}")
+        print(f"  - Uptime: {details['uptime']}")
+        print(f"  - Docker Running: {'Yes' if details['docker'] else 'No'}")
+        print(f"  - Minecraft Users: {'Yes' if details['minecraft_users'] else 'No'}")
+
 if __name__ == "__main__":
     # Argument parser setup
     parser = argparse.ArgumentParser(description="Monitor and manage servers.")
     parser.add_argument("-c", "--command", help="Command to execute (get_status, get_power, set_power).", required=False)
     parser.add_argument("-t", "--target", help="Target host (e.g., hp1, hp2).", required=False)
-    
+    parser.add_argument("-v", "--verbose", help="Display detailed status information.", action="store_true")
+
     args = parser.parse_args()
     
     if args.command and args.target:
@@ -117,6 +127,9 @@ if __name__ == "__main__":
         data = {}
         for hp in HPs:
             data[hp] = get_status(hp)
-        print(data)
+        if args.verbose:
+            print_verbose_status(data)
+        else:
+            print(data)
     else:
         print("Both --command and --target must be provided for specific operations.")
