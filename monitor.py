@@ -18,10 +18,10 @@ def execute_command(command, parser=lambda output: output):
 # GETTERS / SETTERS / PARSERS
 # # POWER
 def get_power(target):
-    return execute_command(f"ilo {target} POWER", parse_power)
+    return execute_command(f"ilo {target} POWER")
     
 def set_power(target, value):
-    return execute_command(f"ilo {target} POWER {value}", parse_power)
+    return execute_command(f"ilo {target} POWER {value}")
     
 def parse_power(output):
     match = re.search(r"\b(On|Off)\b", output, re.IGNORECASE)
