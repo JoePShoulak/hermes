@@ -23,17 +23,14 @@ def re_parse(output, query):
 
 # # POWER
 def get_power(target):
-    return execute_command(f"ilo {target} POWER", parse_power)
+    return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\b(On|Off)\b"))
     
 def set_power(target, value):
-    return execute_command(f"ilo {target} POWER {value}", parse_power)
+    return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off)\b"))
     
-def parse_power(output):
-    return re_parse(output, r"\b(On|Off)\b")
-
 # # Online
 def get_online(target):
-    return execute_command(f"ping -C 1 {target}")
+    return execute_command(f"ping -c 1 {target}")
 
 def parse_online(output):
     return re_parse(output, r"\b(0 rec|1 rec)\b")
