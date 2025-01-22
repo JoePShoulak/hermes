@@ -6,7 +6,7 @@ export default function Status1(props) {
   useEffect(() => {
     const fetchPowerStatus = async () => {
       try {
-        const result = await fetch(`/api/get-power-status`, {
+        const result = await fetch(`/api/power/hp1`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ command: "ilo hp1 power" }),
