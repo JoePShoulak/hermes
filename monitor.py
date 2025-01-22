@@ -27,14 +27,19 @@ def parse_power(output):
     match = re.search(r"\b(On|Off)\b", output, re.IGNORECASE)
     return match.group(1).capitalize() if match else "UNKNOWN"
 
+# # Online
+def get_online(target):
+    return execute_command("ping -C 1 hp1")
+
 HPs = ["hp1", "hp2", "hp3", "hp4"]
 
-if __name__ == "__main__":
-    for tgt in HPs:
-        print(tgt.upper(), get_power(tgt))
-          
-    for tgt in HPs[1:]:
-        print("Shutting off", tgt.upper(), set_power(tgt, "OFF"))
+def get_status(target):
+    status = {
+        "online": None
+	}
+    
+    print(get_online("hp1"))
+    
 
-    for tgt in HPs:
-        print(tgt.upper(), get_power(tgt))
+if __name__ == "__main__":
+	get_status("hp1")
