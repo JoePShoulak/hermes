@@ -24,34 +24,34 @@ def re_parse(output, query):
 # # POWER
 def get_power(target):
 	try: 
-		return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\b(On|Off)\b")) == "On"
+		return execute_command(f"ilo {target} POWER", lambda s: re_parse(s, r"\b(On|Off)\b") == "On")
 	except:
 		return "UNKNOWN"
     
 def set_power(target, value):
 	try: 
-		return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off)\b")) == "On"
+		return execute_command(f"ilo {target} POWER {value}", lambda s: re_parse(s, r"\b(On|Off)\b") == "On")
 	except:
 		return "UNKNOWN"
     
 # # Online
 def get_online(target):
 	try: 
-		return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1|0) received\b")) == "1"
+		return execute_command(f"ping -c 1 {target}", lambda s: re_parse(s, r"\b(1|0) received\b") == "1")
 	except:
 		return False
 	
 # # Docker
 def get_docker(target):
 	try:
-		return int(execute_command(f"ssh {target} sudo docker ps | wc -l")) > 1
+		return execute_command(f"ssh {target} sudo docker ps | wc -l"), lambda s: int(s) > 1
 	except:
 		return "UNKNOWN"
 	
 # # Minecraft
 def get_minecraft_users(target):
 	try:
-		return execute_command(f"ssh {target} sudo ~/bin/rcon_all list", lambda s: re_parse)
+		return execute_command(f"ssh {target} sudo ~/bin/rcon_all list", lambda s: int(re_parse(s, r"\b(\d) of a max")) > 0)
 	except:
 		return "UNKNOWN"
 
