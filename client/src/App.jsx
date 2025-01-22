@@ -6,6 +6,7 @@ function App() {
     <div>
       {/* <Status /> */}
       <Status1 target="HP1" />
+      <Status1 target="HP2" />
     </div>
   );
 }

@@ -43,7 +43,7 @@ export default function Status1(props) {
         <b>{props.target}</b>
       </p>
       <ul>
-        <li>Powered: {status.powered || "?"}</li>
+        <li>Powered: {status.powered || "UNKNOWN"}</li>
       </ul>
     </div>
   );
