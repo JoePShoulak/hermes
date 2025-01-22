@@ -42,11 +42,13 @@ export default function Status1(props) {
 
   return (
     <div>
-      <p>
-        <b>{props.target}</b>
-      </p>
+      <h1>{props.target}</h1>
+      <h2>Power</h2>
       <ul>
         <li>Powered: {status.powered || "UNKNOWN"}</li>
+        <li>
+          <button onClick={() => console.log("pressed")}>ON</button>
+        </li>
       </ul>
     </div>
   );
