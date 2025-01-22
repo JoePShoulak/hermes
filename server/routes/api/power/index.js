@@ -23,6 +23,7 @@ router.get("/:host", (req, res) => {
     }
 
     // parse stdout
+    console.log(stdout);
     stdout = stdout.split("currently: ")[1]?.split("\r\n\r\n")[0] || "UNKNOWN";
 
     // Send the command output as JSON
