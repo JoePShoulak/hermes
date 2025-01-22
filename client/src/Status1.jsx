@@ -20,7 +20,7 @@ export default function Status1(props) {
         const result = await fetch(`/api/power/hp1`);
 
         const data = await result.json();
-        updateStatus("powered", data.output);
+        updateStatus("powered", data.status);
       } catch (error) {
         console.error("Error fetching power status:", error);
         updateStatus("powered", "ERROR");
