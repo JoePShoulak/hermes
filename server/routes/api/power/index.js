@@ -6,8 +6,9 @@ const { exec, execSync } = require("child_process"); // <–– Add execSync
 const ILO_TIMEOUT = 60000;
 
 // GET single host iLO status
-router.get("/:id", (req, res) => {
-  const command = `ilo ${req.params.id} POWER`; // iLO command
+router.get("/:host", (req, res) => {
+  const host = req.params.host;
+  const command = `ilo ${host} POWER`; // iLO command
 
   exec(command, { timeout: ILO_TIMEOUT }, (error, stdout, stderr) => {
     if (error || stderr) {
