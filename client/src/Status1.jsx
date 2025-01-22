@@ -24,7 +24,6 @@ export default function Status1(props) {
       updateStatus("powered", data);
     } catch (err) {
       console.error("Error fetching status data:", err);
-      setError(err.message);
     }
   };
 
