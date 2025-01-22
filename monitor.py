@@ -27,12 +27,33 @@ class State(Enum):
     UNPOWERED = 0
 
     def __repr__(self):
-        pass
+        colors = {
+            3: "green",
+            2: "blue",
+            1: "white",
+            0: "red",
+        }
+        return color_text(self.name, colors[self.value])
 
 class Docker(Enum):
     IN_USE = 2
     ONLINE = 1
     OFFLINE = 0
+
+    def __repr__(self):
+        colors = {
+            3: "green",
+            2: "blue",
+            1: "white",
+            0: "red",
+        }
+        return color_text(self.name, colors[self.value])
+
+def get_ups():
+    try:
+        return execute_command(f"ups | grep ups.status")
+    except:
+        return "UNKNOWN"
 
 
 def get_status(target):
@@ -69,13 +90,15 @@ def prettify_status(data):
     result = []
     for host, status in data.items():
         result.append(f"\nHost: {host.upper()}")
-        result.append(f"  - State: {status["state"].name}")
+        result.append(f"  - State: {status["state"]}")
         result.append(f"  - Docker: {status["docker"].name}")
         result.append(f"  - UID Light: {status["uid"]}")
         result.append(f"  - Uptime: {status["uptime"]}")
     return "\n".join(result)
 
 if __name__ == "__main__":
+    print(get_ups())
+
     # Argument parser setup
     parser = argparse.ArgumentParser(description="Monitor and manage servers.")
     parser.add_argument("-c", "--command", help="Command to execute (get_status, get_power, set_power).", required=False)
