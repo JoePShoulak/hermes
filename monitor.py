@@ -46,7 +46,7 @@ def prettify_status(data):
         result.append(f"\nHost: {host.upper()}")
         result.append(f"  - Online: {color_text('Yes', "green") if status['online']==True else color_text('No', "red")}")
         result.append(f"  - Power: {color_text('On', "green") if status['power']==True else color_text('Off', "red")}")
-        result.append(f"  - Uptime: {color_text(status['uptime'], "red" is status["online"]==False)}")
+        result.append(f"  - Uptime: {color_text(status['uptime'], "red" is status["uptime"]=="-")}")
         result.append(f"  - Docker Running: {color_text('Yes', "blue") if status['docker']==True else 'No'}")
         result.append(f"  - Minecraft Users: {color_text('Yes', "blue") if status['minecraft_users']==True else 'No'}")
         result.append(f"  - UID: {color_text('Yes', "blue") if status['uid']==True else status['uid']}")
