@@ -27,7 +27,9 @@ class State(Enum):
     UNPOWERED = 0
 
 class Docker(Enum):
-    IN_USE = 
+    IN_USE = 2
+    ONLINE = 1
+    OFFLINE = 0
 
 
 def get_status(target):
