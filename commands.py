@@ -1,5 +1,6 @@
 import re
 import subprocess
+from objects import *
 
 class CommandExecutionError(Exception):
     def __init__(self, message, return_code):
@@ -60,10 +61,41 @@ def get_UID(target):
 def set_UID(target, value):
         return execute_command(f"ilo {target} UID {value}", lambda s: re_parse(s, r"\bcurrently (On|Off)\b")=="On")
     
-# Exists
+# # Exists
 def get_exists(target):
     try:
         execute_command(f"ping -c 1 {target}.ilo", default=False)
         return True
     except:
         return False
+    
+# # Status
+def get_status(target):
+    status = {
+        "uptime": None,
+        "uid": None,
+        "state": None,
+        "docker": None,
+    }
+
+    if get_online(target):
+        status["state"] = State.ONLINE
+    elif get_power(target):
+        status["state"] = State.BOOT
+    elif get_exists(target):
+        status["state"] = State.POWERED
+    else:
+        status["state"] = State.UNPOWERED
+
+    if status["state"] == State.ONLINE and get_docker(target):
+        if get_minecraft_users(target):
+            status["docker"] = Docker.IN_USE
+        else:
+            status["docker"] = Docker.ONLINE
+    else:
+        status["docker"] = Docker.OFFLINE
+
+    status["uid"] = False if status["state"]==State.UNPOWERED else f"{get_UID(target)}".replace("UNKNOWN", "-")
+    status["uptime"] = "-" if status["state"]!=State.ONLINE else get_uptime(target)
+    
+    return status
