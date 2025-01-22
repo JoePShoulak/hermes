@@ -17,8 +17,7 @@ def execute_command(command, parser=lambda output: output):
 def nothrow_execute_command(command, parser=lambda output: output, default="UNKNOWN"):
     try:
         return execute_command(command, parser)
-    except CommandExecutionError as e:
-        print(e)
+    except CommandExecutionError:
         return default
 
 # GETTERS / SETTERS / PARSERS
@@ -29,7 +28,7 @@ def re_parse(output, query):
 
 # # UPS
 def get_ups():
-    return nothrow_execute_command("upspc myups@localhost | grep ups.status", lambda s: re_parse(s, r"ups.status: (.*)"))
+    return nothrow_execute_command("upsc myups@localhost", lambda s: re_parse(s, r"ups.status: (.*)"))
 
 # # POWER
 def get_power(target):
