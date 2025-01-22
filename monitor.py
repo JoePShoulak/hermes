@@ -71,6 +71,12 @@ def get_UID(target):
     except:
         return "UNKNOWN"
 
+def set_UID(target, value):
+    try:
+        return execute_command(f"ilo {target} UID {value}", lambda s: re_parse(s, r"\b(On|Off)\b")=="On")
+    except:
+        return "UNKNOWN"
+
 # Main logic for status
 HPs = ["hp1", "hp2", "hp3", "hp4"]
 
@@ -121,6 +127,9 @@ if __name__ == "__main__":
         if args.command.startswith("set_power"):
             _, value = args.command.split("=")
             print(f"Setting power state for {args.target} to {value}: {set_power(args.target, value)}")
+        if args.command.startswith("set_uid"):
+            _, value = args.command.split("=")
+            print(f"Setting UID state for {args.target} to {value}: {set_UID(args.target, value)}")
         else:
             print(f"Unknown command: {args.command}")
     elif not args.command and not args.target:
