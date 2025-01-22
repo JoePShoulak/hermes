@@ -26,6 +26,8 @@ class State(Enum):
     POWERED = 1
     UNPOWERED = 0
 
+    def _
+
 class Docker(Enum):
     IN_USE = 2
     ONLINE = 1
@@ -36,22 +38,8 @@ def get_status(target):
     status = {
         "uptime": None,
         "uid": None,
-
         "state": None,
         "docker": None,
-    }
-
-    STATE = {
-        "online": 3,
-        "boot": 2,
-        "powered": 1,
-        "unpowered": 0,
-    }
-
-    DOCKER = {
-        "in_use": 2,
-        "online": 1,
-        "offline": 0
     }
 
     if get_online(target):
@@ -72,7 +60,7 @@ def get_status(target):
         status["docker"] = Docker.OFFLINE
 
     status["uid"] = False if status["state"]==State.UNPOWERED else f"{get_UID(target)}".replace("UNKNOWN", "-")
-    status["uptime"] = "-" if status["state"]==State.ONLINE else get_uptime(target)
+    status["uptime"] = "-" if status["state"]!=State.ONLINE else get_uptime(target)
     
     return status
 
