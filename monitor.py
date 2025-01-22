@@ -42,8 +42,7 @@ class Docker(Enum):
 
     def __repr__(self):
         colors = {
-            3: "green",
-            2: "blue",
+            2: "green",
             1: "white",
             0: "red",
         }
@@ -51,7 +50,7 @@ class Docker(Enum):
 
 def get_ups():
     try:
-        return execute_command(f"ups | grep ups.status")
+        return execute_command(f"ups")
     except:
         return "UNKNOWN"
 
@@ -91,7 +90,7 @@ def prettify_status(data):
     for host, status in data.items():
         result.append(f"\nHost: {host.upper()}")
         result.append(f"  - State: {status["state"]}")
-        result.append(f"  - Docker: {status["docker"].name}")
+        result.append(f"  - Docker: {status["docker"]}")
         result.append(f"  - UID Light: {status["uid"]}")
         result.append(f"  - Uptime: {status["uptime"]}")
     return "\n".join(result)
