@@ -26,7 +26,7 @@ class State(Enum):
     POWERED = 1
     UNPOWERED = 0
 
-    def __repr__(self):
+    def __str__(self):
         colors = {
             3: "green",
             2: "blue",
@@ -40,7 +40,7 @@ class Docker(Enum):
     ONLINE = 1
     OFFLINE = 0
 
-    def __repr__(self):
+    def __str__(self):
         colors = {
             2: "green",
             1: "white",
@@ -50,7 +50,7 @@ class Docker(Enum):
 
 def get_ups():
     try:
-        return execute_command("upsc myups@localhost | grep ups.status").split(": ")[1:]
+        return "UPS: " + execute_command("upsc myups@localhost | grep ups.status").split(": ")[1:]
     except:
         return "UNKNOWN"
 
