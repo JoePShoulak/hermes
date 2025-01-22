@@ -29,6 +29,11 @@ export default function Status1(props) {
     }
   };
 
+  // Run fetchData on component mount
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       fetchData();
