@@ -80,7 +80,7 @@ def set_UID(target, value):
 # Exists
 def get_exists(target):
     try:
-        execute_command(f"ping -c 1 {target}")
+        execute_command(f"ping -c 1 {target}.ilo")
         return True
     except:
         return False
