@@ -54,18 +54,16 @@ HPs = ["hp1", "hp2", "hp3", "hp4"]
 def get_status(target):
 	status = {
 		"power": None,
-		"online": None
+		"online": None,
+		"docker": None
 	}
 
-	if get_online(target):
-		status["online"] = True
+	status["online"] = get_online(target)
+	if status["online"]:
 		status["power"] = True
-	elif get_power(target):
-		status["online"] = False
-		status["power"] = True
+		status["docker"] = get_docker(target)
 	else:
-		status["online"] = False
-		status["power"] = False
+		status["power"] = get_power(target)
 
 	return status
 
