@@ -30,6 +30,7 @@ def get_status(target):
 
     status["online"] = get_online(target)
     status["power"] = True if status["online"]==True else get_power(target)
+    print(status["power"])
     status["uid"] = False if status["power"]==False else get_UID(target)
     status["exists"] = True if status["power"]==True else get_exists(target)
 
