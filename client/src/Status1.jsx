@@ -6,10 +6,7 @@ export default function Status1(props) {
   useEffect(() => {
     const fetchPowerStatus = async () => {
       try {
-        const result = await fetch(`/api/power/hp1`, {
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ command: "ilo hp1 power" }),
-        });
+        const result = await fetch(`/api/power/hp1`);
 
         const data = await result.json();
         setStatus(prevStatus => ({ ...prevStatus, powered: data.output }));
