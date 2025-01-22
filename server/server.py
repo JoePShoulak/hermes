@@ -19,13 +19,9 @@ def index():
     returns ups_status: str
 """
 
-@app.route('/api/status/<host>', methods=['GET'])
+@app.route('/api/status/<host>', methods=['GET', 'PUT'])
 def host_status(host):
     return f'host_status {host}'
-
-@app.route('/api/status/<host>', methods=['PUT'])
-def host_status(host):
-    return f'host_status2 {host}'
 
 @app.route('/api/docker/<host>', methods=['GET'])
 def docker_status(host):
