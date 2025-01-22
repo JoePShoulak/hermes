@@ -14,6 +14,7 @@ export default function Status1(props) {
   }
 
   const fetchData = async () => {
+    console.log("fetching data");
     try {
       const response = await fetch("/api/power/all"); // Call the API
       if (!response.ok) {
