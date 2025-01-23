@@ -14,7 +14,7 @@ tasks = {
 threads = []
 data = {}
 def run_task(key, func, args):
-  data[key] = func(args)
+  data[key] = func(*args)
 
 for key, (func, args) in tasks.items():
   thread = Thread(
