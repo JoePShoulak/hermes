@@ -17,12 +17,6 @@ def execute_command(command, parser=lambda output: output, default="UNKNOWN"):
 
         return default
     
-"""
-    hp1: 10.0.20.11
-    hp2: 10.0.20.12
-    hp3: 10.0.20.13
-    hp4: 10.0.20.14
-"""
 
 # GETTERS / SETTERS / PARSERS
 # # GENERAL
