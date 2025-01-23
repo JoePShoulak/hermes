@@ -42,3 +42,4 @@ class Docker(Enum):
             0: "white",
         }
         return color_text(self.name, colors[self.value])
+    
