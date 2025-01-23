@@ -23,3 +23,4 @@ file_path.unlink()
 file_path = Path(__file__).with_name('data.json')
 with file_path.open('w') as fp:
   json.dump(data, fp)
+  
