@@ -15,7 +15,7 @@ def get_data():
 
 @app.route('/')
 def index():
-    return 'Home page'
+    return jsonify(get_data().get("hp1"))
 
 @app.route('/api/host/<host>', methods=['GET'])
 def host_status(host):
